@@ -5,19 +5,15 @@
     <Grid>
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="70*"/>
-            <ColumnDefinition Width="188*"/>
+            <ColumnDefinition Width="112*"/>
+            <ColumnDefinition Width="76*"/>
             <ColumnDefinition/>
         </Grid.ColumnDefinitions>
-        <DockPanel HorizontalAlignment="Left" Height="322" LastChildFill="False" VerticalAlignment="Top" Width="378" Grid.ColumnSpan="2" Grid.Column="1">
-            <ListView Height="321.6" VerticalAlignment="Top" Width="100">
-                <ListView.View>
-                    <GridView>
-                        <GridViewColumn/>
-                    </GridView>
-                </ListView.View>
-            </ListView>
-        </DockPanel>
-        <TreeView HorizontalAlignment="Left" Height="322" VerticalAlignment="Top" Width="139"/>
+        <TreeView Height="322" VerticalAlignment="Top" Margin="0,0,209.4,0" Grid.ColumnSpan="2" Name="ConsolesTree">
+            <TreeViewItem Name="Root" Header="Systems" >
 
+            </TreeViewItem>
+        </TreeView>
+        <DataGrid Name="GamesGrid" Grid.Column="1" HorizontalAlignment="Left" Margin="20,10,0,0" VerticalAlignment="Top" Height="302" Width="348" Grid.ColumnSpan="2"/>
     </Grid>
 </Window>
