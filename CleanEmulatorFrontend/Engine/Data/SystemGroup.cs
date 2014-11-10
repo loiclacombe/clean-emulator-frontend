@@ -3,12 +3,13 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using GamesData.DatData;
 
 namespace CleanEmulatorFrontend.Engine.Data
 {
-    public class Game
+    public class SystemGroup
     {
-        public string Title { get; set; }
-        public string Path { get; set; }
+        public string Name { get; set; }
+        public IEnumerable<EmulatedSystem> Systems { get; set; }
     }
 }

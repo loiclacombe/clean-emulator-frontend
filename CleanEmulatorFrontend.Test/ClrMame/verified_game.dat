@@ -1,0 +1,5 @@
+﻿game (
+	name "ACME Animation Factory (USA)"
+	description "ACME Animation Factory (USA)"
+	rom ( name "ACME Animation Factory (USA).sfc" size 1048576 crc 0944A5C3 md5 4623FC6ECF936F67C21E2D4BCADABF80 sha1 0C739DE2095A9BD310BC19D28E7566FAF894C543 flags verified )
+)

@@ -5,8 +5,6 @@ using System.Data;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Windows;
-using Ninject;
-using Ninject.Modules;
 
 namespace CleanEmulatorFrontend
 {

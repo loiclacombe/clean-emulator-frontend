@@ -4,11 +4,12 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using CleanEmulatorFrontend.Engine.Data;
+using GamesData.DatData;
 
 namespace CleanEmulatorFrontend.Engine.Listers
 {
-    public interface GamesLister
+    public interface IGamesLister
     {
-        List<Game> ListAll();
+        IList<Game> ListAll();
     }
 }
