@@ -13,16 +13,16 @@ namespace Parsers.Mame
 {
     public class DatParser : IDatParser
     {
-        public Dat Parse(string datfolder)
+        public LibraryData Parse(string datPath)
         {
-            using (var stream = new FileStream(datfolder, FileMode.Open))
+            using (var stream = new FileStream(datPath, FileMode.Open))
             {
                 var serializer = new XmlSerializer(typeof(mame));
                 var mameData = serializer.Deserialize(stream) as mame;
                 Debug.Assert(mameData != null, "mameData != null");
                 var games = mameData.game.Select(ConvertMameGame) ;
 
-                var dat = new Dat ();
+                var dat = new LibraryData ();
                 return dat;
             }
         }

@@ -3,30 +3,26 @@ using System.Collections.Generic;
 using System.Configuration;
 using System.IO;
 using CleanEmulatorFrontend.Engine.Data;
+using CleanEmulatorFrontend.Engine.Launchers;
 using GamesData.DatData;
-using Parsers.Higan;
 using ClrMame = Parsers.ClrMame;
+using Higan = Parsers.Higan;
 
 namespace CleanEmulatorFrontend
 {
     public class AppLoader
     {
-        private readonly string _datFolder;
-        private DirectoryInfo[] directories;
-        private ClrMame.DatParser _datParser;
+        private ClrMame.Parser _clrMameParser;
+        private Higan.Library _higanLibrary;
 
-        public AppLoader(ClrMame.DatParser datParser )
+        public AppLoader(ClrMame.Parser clrMameParser, Higan.Library higanLibrary)
         {
-            _datFolder = Path.Combine(Environment.GetFolderPath(
-                Environment.SpecialFolder.ApplicationData), "CleanEmulatorFrontend",
-                                      "Dats");
-            _datParser = datParser;
+            _higanLibrary = higanLibrary;
         }
+
 
         public IEnumerable<SystemGroup> LoadDats()
         {
-
-
             var emulatedSystems = new List<EmulatedSystem>();
             var consoles = new SystemGroup
             {
@@ -47,20 +43,7 @@ namespace CleanEmulatorFrontend
 
         private void LoadHiganFolders(List<EmulatedSystem> emulatedSystems)
         {
-           var libraryParser=new LibraryParser();
-           emulatedSystems.AddRange(libraryParser.Parse(ConfigurationManager.AppSettings["emulators.higan.library"]).Systems);
-
-        }
-
-        private void LoadClrMameDats(List<EmulatedSystem> emulatedSystems)
-        {
-            var directoryInfo = new DirectoryInfo(_datFolder);
-            var files = directoryInfo.GetFiles("*.dat", SearchOption.AllDirectories);
-            foreach (var fileInfo in files)
-            {
-                var dat = _datParser.Parse(fileInfo.FullName);
-                emulatedSystems.AddRange(dat.Systems);
-            }
+           emulatedSystems.AddRange(_higanLibrary.Parse().Systems);
         }
     }
 }

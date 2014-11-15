@@ -30,7 +30,7 @@
 
         <TreeView HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Grid.Column="0" Grid.Row="0" Margin="0,0,126.2,0.2" x:Name="_systemsTree" SelectedItemChanged="_systemsTree_SelectedItemChanged" Grid.ColumnSpan="2" >
         </TreeView>
-        <DataGrid  Name="_gamesGrid" Grid.Column="1" Grid.Row="0"  HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Grid.ColumnSpan="2" Margin="0.2,0,-0.4,0.2" MouseDoubleClick="_gamesGrid_MouseDoubleClick" KeyUp="_gamesGrid_KeyUp"/>
+        <DataGrid  Name="_gamesGrid" Grid.Column="1" Grid.Row="0"  HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Grid.ColumnSpan="2" Margin="0.2,0,-0.4,0.2" MouseDoubleClick="_gamesGrid_MouseDoubleClick" IsReadOnly="True" />
 
     </Grid>
 </Window>

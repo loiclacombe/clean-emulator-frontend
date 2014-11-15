@@ -1,39 +1,36 @@
-﻿
-using System;
-using System.Collections;
+﻿using System;
 using System.Collections.Generic;
-using System.Configuration;
-using System.Data;
 using System.Diagnostics;
 using System.Linq;
+using System.Runtime.InteropServices;
+using System.Threading;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Input;
+using CleanEmulatorFrontend.Controllers;
 using CleanEmulatorFrontend.Engine.Data;
 using CleanEmulatorFrontend.Engine.Launchers;
-using CleanEmulatorFrontend.Engine.Listers;
 using GamesData.DatData;
-using Microsoft.Practices.Unity;
 using log4net;
-using log4net.Repository.Hierarchy;
-
 
 namespace CleanEmulatorFrontend
 {
     /// <summary>
-    /// Interaction logic for MainWindow.xaml
+    ///     Interaction logic for MainWindow.xaml
     /// </summary>
     public partial class MainWindow : Window
     {
-        private static ILog _logger = LogManager.GetLogger(typeof(MainWindow));
-        private List<Game> _games=new List<Game>();
-        private AppLoader _appLoader;
+        private static readonly ILog _logger = LogManager.GetLogger(typeof (MainWindow));
+
+        private readonly AppLoader _appLoader;
+        private LaunchController _launchController;
         private IEnumerable<SystemGroup> _systemGroups;
 
-        public MainWindow()
+        public MainWindow(AppLoader appLoader, LaunchController launchController)
         {
-            IUnityContainer container = new UnityContainer();
-            container.RegisterType<AppLoader>();
-            _appLoader = container.Resolve<AppLoader>();
+            _appLoader = appLoader;
+            _launchController = launchController;
+
             InitializeComponent();
             InitTree();
             WindowState = WindowState.Maximized;
@@ -44,10 +41,11 @@ namespace CleanEmulatorFrontend
             _systemsTree.Items.Clear();
             try
             {
-                _systemGroups = _appLoader.LoadDats(); 
-            }catch(Exception e)
+                _systemGroups = _appLoader.LoadDats();
+            }
+            catch (Exception e)
             {
-                _logger.Error(e,e);
+                _logger.Error(e, e);
             }
 
             _systemsTree.ItemsSource = _systemGroups;
@@ -56,15 +54,15 @@ namespace CleanEmulatorFrontend
 
         private void _systemsTree_SelectedItemChanged(object sender, RoutedPropertyChangedEventArgs<object> e)
         {
-            var value = e.NewValue;
+            object value = e.NewValue;
             var games = new List<Game>();
 
-            if (value.GetType() == typeof(EmulatedSystem))
+            if (value.GetType() == typeof (EmulatedSystem))
             {
                 var emulatedSystem = value as EmulatedSystem;
                 games.AddRange(emulatedSystem.Games);
             }
-            else if (value.GetType() == typeof(SystemGroup))
+            else if (value.GetType() == typeof (SystemGroup))
             {
                 var systemGroup = value as SystemGroup;
                 systemGroup.Systems.ToList().ForEach(sg => games.AddRange(sg.Games));
@@ -72,36 +70,50 @@ namespace CleanEmulatorFrontend
             _gamesGrid.ItemsSource = games;
         }
 
-        private void _gamesGrid_MouseDoubleClick(object sender, System.Windows.Input.MouseButtonEventArgs e)
+        private void _gamesGrid_MouseDoubleClick(object sender, MouseButtonEventArgs e)
         {
-
             IInputElement element = e.MouseDevice.DirectlyOver;
-            if (element != null && element is FrameworkElement && ((FrameworkElement)element).Parent is DataGridCell)
+            if (element != null && element is FrameworkElement && ((FrameworkElement) element).Parent is DataGridCell)
             {
                 var grid = sender as DataGrid;
                 LaunchSelectedGame(grid);
             }
         }
 
-        private static void LaunchSelectedGame(DataGrid grid)
+        private void LaunchSelectedGame(DataGrid grid)
         {
             if (grid != null && grid.SelectedItems != null && grid.SelectedItems.Count == 1)
             {
                 var game = grid.SelectedItem as Game?;
                 if (game.HasValue)
                 {
-                    new Higan().Run(game.Value);
+                    IEmulator launcher = FindLauncher();
+                    var process=launcher.StartGame(game.Value);
+                    process.WaitForExit();
                 }
             }
         }
 
-        private void _gamesGrid_KeyUp(object sender, System.Windows.Input.KeyEventArgs e)
+        private IEmulator FindLauncher()
         {
-    
-                var grid = e.Source as DataGrid;
-            LaunchSelectedGame(grid);
+            return new Higan();
         }
 
 
+        [DllImport("user32.dll")]
+        private static extern IntPtr SetFocus(IntPtr hWnd);
+
+        [DllImport("user32.dll")]
+        [return: MarshalAs(UnmanagedType.Bool)]
+        private static extern bool SetForegroundWindow(IntPtr hWnd);
+
+
+        public void FullScreen(Process process)
+        {
+            Thread.Sleep(5000);
+            _logger.DebugFormat("Process handle : {0}", process.MainWindowHandle);
+            SetForegroundWindow(process.MainWindowHandle);
+            SetFocus(process.MainWindowHandle);
+        }
     }
 }
