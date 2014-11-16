@@ -1,0 +1,20 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<xs:schema targetNamespace="http://tempuri.org/XMLSchema.xsd"
+    elementFormDefault="qualified"
+    xmlns="http://tempuri.org/XMLSchema.xsd"
+    xmlns:mstns="http://tempuri.org/XMLSchema.xsd"
+    xmlns:xs="http://www.w3.org/2001/XMLSchema">
+  <xs:element name="Root" >
+    
+  </xs:element>
+
+  <xs:complexType name="EmulatedSystem">
+    <xs:attribute name="description"/>
+    <xs:attribute name="shortName"/>
+    
+  </xs:complexType>
+  <xs:complexType name="Emulator">
+    <xs:attribute name="description"/>
+    <xs:attribute name="shortName"/>
+  </xs:complexType>
+</xs:schema>

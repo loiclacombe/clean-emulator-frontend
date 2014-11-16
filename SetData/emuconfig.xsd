@@ -1,0 +1,45 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<xs:schema id="emuconfig"
+    targetNamespace="http://loiclacombe.com/emuconfig.xsd"
+    elementFormDefault="qualified"
+    xmlns="http://loiclacombe.com/emuconfig.xsd"
+    xmlns:tns="http://loiclacombe.com/emuconfig.xsd"
+    xmlns:xs="http://www.w3.org/2001/XMLSchema"
+>
+  <xs:complexType name="EmulatedSystem">
+    <xs:sequence>
+      <xs:element name="CompatibleEmulator" type="tns:CompatibleEmulator" minOccurs="1" maxOccurs="1"/>
+    </xs:sequence>
+    <xs:attribute name="Description" type="xs:string" />
+    <xs:attribute name="ShortName" type="xs:string" />
+  </xs:complexType>
+  <xs:complexType name="CompatibleEmulator">
+    <xs:attribute name="Name" type="xs:string" />
+    <xs:attribute name="LibraryClass" type="xs:string" />
+    <xs:attribute name="RomFolderKey" type="xs:string" />
+  </xs:complexType>
+  
+  <xs:complexType name="Emulator">
+    <xs:sequence>
+      <xs:element name="EmulatorPathKey" type="xs:string" />
+      <xs:element name="CliParameters" type="xs:string" />
+    </xs:sequence>
+    <xs:attribute name="Name" type="xs:string" />
+    <xs:attribute name="Description" type="xs:string" />
+  </xs:complexType>
+  <xs:complexType name="SystemGroup">
+    <xs:sequence>
+      <xs:element name="EmulatedSystem" type="tns:EmulatedSystem" minOccurs="1" maxOccurs="unbounded"/>
+    </xs:sequence>
+    <xs:attribute name="Description" type="xs:string" />
+  </xs:complexType>
+  
+  <xs:element name="SystemConfigRoot">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element name="SystemGroup" type="tns:SystemGroup" minOccurs="1" maxOccurs="unbounded" />
+        <xs:element name="Emulator" type="tns:Emulator" minOccurs="1" maxOccurs="unbounded" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+</xs:schema>

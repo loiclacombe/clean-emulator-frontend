@@ -4,14 +4,13 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{F1E8E9A7-7B34-4095-9DBC-AE0263D6B59C}</ProjectGuid>
+    <ProjectGuid>{406150EC-C2B6-4931-89D4-96775C662493}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>GamesData</RootNamespace>
-    <AssemblyName>GamesData</AssemblyName>
-    <TargetFrameworkVersion>v4.5.1</TargetFrameworkVersion>
+    <RootNamespace>AppConfig</RootNamespace>
+    <AssemblyName>AppConfig</AssemblyName>
+    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
-    <TargetFrameworkProfile />
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -32,6 +31,7 @@
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
+    <Reference Include="System.Configuration" />
     <Reference Include="System.Core" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
@@ -40,24 +40,8 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="EmulatedSystem.cs" />
-    <Compile Include="Emulator.cs" />
-    <Compile Include="Game.cs" />
-    <Compile Include="emuconfig.cs">
-      <DependentUpon>emuconfig.xsd</DependentUpon>
-    </Compile>
-    <Compile Include="ILauncher.cs" />
-    <Compile Include="LibraryData.cs" />
+    <Compile Include="UserConfigWrapper.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Rom.cs" />
-  </ItemGroup>
-  <ItemGroup>
-    <EmbeddedResource Include="emuconfig.xml" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="emuconfig.xsd">
-      <SubType>Designer</SubType>
-    </None>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

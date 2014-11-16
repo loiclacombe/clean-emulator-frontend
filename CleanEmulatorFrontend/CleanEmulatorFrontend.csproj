@@ -35,11 +35,14 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <PropertyGroup>
-    <StartupObject />
+    <StartupObject>CleanEmulatorFrontend.App</StartupObject>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="Castle.Core">
       <HintPath>..\packages\Castle.Core.3.2.0\lib\net45\Castle.Core.dll</HintPath>
+    </Reference>
+    <Reference Include="ICSharpCode.SharpZipLib">
+      <HintPath>..\packages\SharpZipLib.0.86.0\lib\20\ICSharpCode.SharpZipLib.dll</HintPath>
     </Reference>
     <Reference Include="Irony, Version=1.0.0.0, Culture=neutral, PublicKeyToken=ca48ace7223ead47, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
@@ -47,6 +50,9 @@
     </Reference>
     <Reference Include="log4net">
       <HintPath>..\packages\log4net.2.0.3\lib\net40-full\log4net.dll</HintPath>
+    </Reference>
+    <Reference Include="Lucene.Net">
+      <HintPath>..\packages\Lucene.Net.3.0.3\lib\NET40\Lucene.Net.dll</HintPath>
     </Reference>
     <Reference Include="Microsoft.VisualStudio.Shell.11.0, Version=11.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
       <Private>True</Private>
@@ -102,6 +108,13 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="SystemsCache.cs" />
+    <Compile Include="TreeViewExtensions.cs" />
+    <Compile Include="UIUtility.cs" />
+    <Page Include="ErrorDialog.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="MainWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
@@ -111,19 +124,15 @@
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="AppLoader.cs" />
-    <Compile Include="Controllers\LaunchController.cs" />
-    <Compile Include="Engine\Data\SystemGroup.cs" />
-    <Compile Include="Engine\Emulators\Higan.cs" />
-    <Compile Include="Engine\Emulators\IEmulator.cs" />
-    <Compile Include="Engine\Emulators\Win32.cs" />
-    <Compile Include="Engine\Persist\GamesCache.cs" />
+    <Compile Include="ErrorDialog.xaml.cs">
+      <DependentUpon>ErrorDialog.xaml</DependentUpon>
+    </Compile>
     <Compile Include="MainWindow.xaml.cs">
       <DependentUpon>MainWindow.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="App.cs" />
     <Compile Include="Properties\AssemblyInfo.cs">
       <SubType>Code</SubType>
     </Compile>
@@ -160,6 +169,14 @@
     <Folder Include="Properties\DataSources\" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\AppConfig\AppConfig.csproj">
+      <Project>{406150EC-C2B6-4931-89D4-96775C662493}</Project>
+      <Name>AppConfig</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\EmulatorModules\EmulatorModules.csproj">
+      <Project>{3942ECD5-99B4-4961-997E-5553B2ED7A1D}</Project>
+      <Name>EmulatorModules</Name>
+    </ProjectReference>
     <ProjectReference Include="..\Parsers\Parsers.csproj">
       <Project>{dda06a98-958f-40b2-b28a-19868074dd5d}</Project>
       <Name>Parsers</Name>

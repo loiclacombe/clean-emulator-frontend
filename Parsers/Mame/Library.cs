@@ -7,11 +7,12 @@ using System.Reactive.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Xml.Serialization;
+using GamesData;
 using GamesData.DatData;
 
 namespace Parsers.Mame
 {
-    public class DatParser : IDatParser
+    public class Library : ILibrary
     {
         public LibraryData Parse(string datPath)
         {
@@ -30,6 +31,16 @@ namespace Parsers.Mame
         public Game ConvertMameGame(game game)
         {
             return default(Game);
+        }
+
+        public LibraryData Parse()
+        {
+            throw new NotImplementedException();
+        }
+
+        public void Parse(EmulatedSystem emulatedSystem)
+        {
+            throw new NotImplementedException();
         }
     }
 }

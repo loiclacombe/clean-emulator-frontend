@@ -1,15 +1,16 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
+using System.Reflection;
 using System.Runtime.InteropServices;
 using System.Threading;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
-using CleanEmulatorFrontend.Controllers;
-using CleanEmulatorFrontend.Engine.Data;
-using CleanEmulatorFrontend.Engine.Launchers;
+using Castle.Core.Internal;
+using GamesData;
 using GamesData.DatData;
 using log4net;
 
@@ -23,80 +24,83 @@ namespace CleanEmulatorFrontend
         private static readonly ILog _logger = LogManager.GetLogger(typeof (MainWindow));
 
         private readonly AppLoader _appLoader;
-        private LaunchController _launchController;
-        private IEnumerable<SystemGroup> _systemGroups;
+        private SystemsCache _systemsCache;
+        private IEnumerable<Game> _filteredGames;
+        private IEnumerable<Game> _nonFilteredGames;
 
-        public MainWindow(AppLoader appLoader, LaunchController launchController)
+        public MainWindow(AppLoader appLoader)
         {
             _appLoader = appLoader;
-            _launchController = launchController;
 
             InitializeComponent();
-            InitTree();
-            WindowState = WindowState.Maximized;
         }
 
-        private void InitTree()
+        public void InitializeContent()
         {
-            _systemsTree.Items.Clear();
             try
             {
-                _systemGroups = _appLoader.LoadDats();
+                _systemsCache = _appLoader.LoadLibraries();
+                SystemsTree.ItemsSource = _systemsCache.Groups;
+                SystemsTree.SetSelectedItem("Consoles", o=> o.GetType() == typeof(SystemGroup)? ((SystemGroup)o).Description:"toto");
             }
             catch (Exception e)
             {
                 _logger.Error(e, e);
+                var message = e.Message+"\n"+e.StackTrace;
+                if (e.InnerException != null)
+                {
+                    message +=  "\n"+e.InnerException.Message + "\n" + e.InnerException.StackTrace;
+                }
+                new ErrorDialog("Startup error", message);
             }
-
-            _systemsTree.ItemsSource = _systemGroups;
+            WindowState = WindowState.Maximized;
         }
 
 
         private void _systemsTree_SelectedItemChanged(object sender, RoutedPropertyChangedEventArgs<object> e)
         {
             object value = e.NewValue;
-            var games = new List<Game>();
+            IEnumerable<Game> games = new List<Game>();
 
             if (value.GetType() == typeof (EmulatedSystem))
             {
                 var emulatedSystem = value as EmulatedSystem;
-                games.AddRange(emulatedSystem.Games);
+                games=_systemsCache.FilterBySystem(emulatedSystem);
             }
             else if (value.GetType() == typeof (SystemGroup))
             {
                 var systemGroup = value as SystemGroup;
-                systemGroup.Systems.ToList().ForEach(sg => games.AddRange(sg.Games));
+                games = _systemsCache.FilterBySystemGroup(systemGroup);
             }
-            _gamesGrid.ItemsSource = games;
+            GamesGrid.ItemsSource =_nonFilteredGames = games;
         }
+
+
 
         private void _gamesGrid_MouseDoubleClick(object sender, MouseButtonEventArgs e)
         {
             IInputElement element = e.MouseDevice.DirectlyOver;
-            if (element != null && element is FrameworkElement && ((FrameworkElement) element).Parent is DataGridCell)
+            if (element is FrameworkElement && ((FrameworkElement) element).Parent is DataGridCell)
             {
-                var grid = sender as DataGrid;
-                LaunchSelectedGame(grid);
+                LaunchSelectedGame();
             }
         }
 
-        private void LaunchSelectedGame(DataGrid grid)
+        private void LaunchSelectedGame()
         {
-            if (grid != null && grid.SelectedItems != null && grid.SelectedItems.Count == 1)
+            if (GamesGrid.SelectedItems.Count == 1)
             {
-                var game = grid.SelectedItem as Game?;
-                if (game.HasValue)
-                {
-                    IEmulator launcher = FindLauncher();
-                    var process=launcher.StartGame(game.Value);
-                    process.WaitForExit();
-                }
+                var game = GamesGrid.SelectedItem as Game;
+                if (game == null) return;
+                ILauncher launcher = FindLauncher(game);
+                Process process = launcher.StartGame(game);
+                process.WaitForExit();
             }
         }
 
-        private IEmulator FindLauncher()
+        private ILauncher FindLauncher(Game game)
         {
-            return new Higan();
+            return game.System.Emulator.Launcher;
         }
 
 
@@ -114,6 +118,94 @@ namespace CleanEmulatorFrontend
             _logger.DebugFormat("Process handle : {0}", process.MainWindowHandle);
             SetForegroundWindow(process.MainWindowHandle);
             SetFocus(process.MainWindowHandle);
+        }
+
+        private void SearchGameBlock_OnKeyDown(object sender, KeyEventArgs e)
+        {
+            if (e.Key == Key.Enter)
+            {
+                FilterGames();
+            }
+            else if (e.Key == Key.Down)
+            {
+                GamesGrid.SelectedIndex = 0;
+            }
+        }
+
+        private void FilterGames()
+        {
+            if (SearchGameBlock.Text.IsNullOrEmpty())
+            {
+                GamesGrid.ItemsSource = _filteredGames = _nonFilteredGames;
+            }
+            else
+            {
+               GamesGrid.ItemsSource = _filteredGames = Filter(SearchGameBlock.Text);
+            }
+        }
+
+
+        public IEnumerable<Game> Filter( string search)
+        {
+            var words = search.ToLower().Split(' ');
+            return _nonFilteredGames.Where(g => AllWordsAreContainedIn(g, words));
+        }
+
+        private static bool AllWordsAreContainedIn(Game game, IEnumerable<string> words)
+        {
+            return words.All(word => game.Description.ToLower().Contains(word));
+        }
+
+        private void MainWindow_OnKeyDown(object sender, KeyEventArgs e)
+        {
+            if (IsCtrlAndK(e))
+            {
+                SearchGameBlock.Text = string.Empty;
+                SearchGameBlock.Focus();
+            }
+        }
+
+        public static void SetSelectedItem(ref TreeView control, object item)
+        {
+            try
+            {
+                DependencyObject dObject = control
+                    .ItemContainerGenerator
+                    .ContainerFromItem(item);
+
+                //uncomment the following line if UI updates are unnecessary
+                ((TreeViewItem)dObject).IsSelected = true;                
+
+                MethodInfo selectMethod =
+                   typeof(TreeViewItem).GetMethod("Select",
+                   BindingFlags.NonPublic | BindingFlags.Instance);
+
+                selectMethod.Invoke(dObject, new object[] { true });
+            }
+            catch { }
+        }
+
+        private static bool IsCtrlAndK(KeyEventArgs e)
+        {
+            return e.Key == Key.K && (Keyboard.IsKeyDown(Key.LeftCtrl) || Keyboard.IsKeyDown(Key.RightCtrl));
+        }
+
+        private void GamesGrid_OnKeyDown(object sender, KeyEventArgs e)
+        {
+            if (e.Key == Key.Enter)
+            {
+                e.Handled = true;
+            }
+        }
+
+        private void GamesGrid_OnKeyUp(object sender, KeyEventArgs e)
+        {
+            if (e.Key == Key.Enter)
+            {
+                LaunchSelectedGame();
+                GamesGrid.SelectedIndex--;
+                e.Handled = true;
+            }
         }
     }
 }

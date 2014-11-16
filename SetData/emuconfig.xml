@@ -1,0 +1,87 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<SystemConfigRoot xmlns="http://loiclacombe.com/emuconfig.xsd"
+   xmlns:xsi="http://www.w3.org/2000/10/XMLSchema-instance"
+   xsi:schemaLocation="http://loiclacombe.com/emuconfig.xsd file:emuconfig.xsd">
+  <SystemGroup Description="Consoles" >
+    <EmulatedSystem Description="Famicom">
+      <CompatibleEmulator
+        Name="nestopia"
+        LibraryClass="Parsers.SplitSet.Library"
+        RomFolderKey="higan.famicom.library"/>
+    </EmulatedSystem>
+
+    <EmulatedSystem Description="Game Boy">
+      <CompatibleEmulator
+        Name="gambatte"
+        LibraryClass="Parsers.SplitSet.Library"
+        RomFolderKey="gambatte.gb.library"/>
+    </EmulatedSystem>
+    <EmulatedSystem Description="Game Boy Color">
+      <CompatibleEmulator
+        Name="gambatte"
+        LibraryClass="Parsers.SplitSet.Library"
+        RomFolderKey="gambatte.gbc.library"/>
+    </EmulatedSystem>
+    <EmulatedSystem Description="Game Boy Avance">
+      <CompatibleEmulator
+        Name="mednafen"
+        LibraryClass="Parsers.SplitSet.Library"
+        RomFolderKey="mednafen.gba.library"/>
+    </EmulatedSystem>
+    <EmulatedSystem Description="Game Gear">
+      <CompatibleEmulator
+        Name="fusion"
+        LibraryClass="Parsers.SplitSet.Library"
+        RomFolderKey="fusion.gamegear.library"/>
+    </EmulatedSystem>
+    <EmulatedSystem Description="Master System">
+      <CompatibleEmulator
+        Name="fusion"
+        LibraryClass="Parsers.SplitSet.Library"
+        RomFolderKey="fusion.mastersystem.library"/>
+    </EmulatedSystem>
+    <EmulatedSystem Description="Megadrive">
+      <CompatibleEmulator 
+        Name="fusion"
+        LibraryClass="Parsers.SplitSet.Library"
+        RomFolderKey="fusion.megadrive.library"/>
+    </EmulatedSystem>
+    <EmulatedSystem Description="Nintendo 64">
+      <CompatibleEmulator
+        Name="project64"
+        LibraryClass="Parsers.SplitSet.Library"
+        RomFolderKey="project64.nintendo64.library"/>
+    </EmulatedSystem>
+    <EmulatedSystem Description="Super Famicom">
+      <CompatibleEmulator
+        Name="higan"
+        LibraryClass="Parsers.Higan.Library"
+        RomFolderKey="higan.superfamicom.library"/>
+    </EmulatedSystem>
+    
+  </SystemGroup>
+  <Emulator Name="higan" Description="Higan">
+    <EmulatorPathKey>emulators.higan.path</EmulatorPathKey>
+    <CliParameters>"{0}" -fullscreen</CliParameters>
+  </Emulator>
+  <Emulator Name="fusion" Description="Fusion">
+    <EmulatorPathKey>emulators.fusion.path</EmulatorPathKey>
+    <CliParameters>"{0}" -fullscreen</CliParameters>
+  </Emulator>
+  <Emulator Name="nestopia" Description="NestopiaUE">
+    <EmulatorPathKey>emulators.nestopia.path</EmulatorPathKey>
+    <CliParameters>"{0}" -fullscreen</CliParameters>
+  </Emulator>
+  <Emulator Name="gambatte" Description="NestopiaUE">
+    <EmulatorPathKey>emulators.gambatte.path</EmulatorPathKey>
+    <CliParameters>"{0}" -fullscreen"</CliParameters>
+  </Emulator>
+  <Emulator Name="mednafen" Description="Mednafen">
+    <EmulatorPathKey>emulators.mednafen.path</EmulatorPathKey>
+    <CliParameters>"{0}"</CliParameters>
+  </Emulator>
+  <Emulator Name="project64" Description="Project 64">
+    <EmulatorPathKey>emulators.project64.path</EmulatorPathKey>
+    <CliParameters>"{0}" -fullscreen</CliParameters>
+  </Emulator>
+</SystemConfigRoot>

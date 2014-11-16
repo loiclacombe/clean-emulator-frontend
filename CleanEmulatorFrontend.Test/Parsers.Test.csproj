@@ -65,9 +65,10 @@
     </Otherwise>
   </Choose>
   <ItemGroup>
-    <Compile Include="ClrMame\DatParserTest.cs" />
+    <Compile Include="ClrMame\LibraryTest.cs" />
     <Compile Include="Higan\LibraryTest.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="SplitSet\SplitSetTest.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config">
@@ -86,10 +87,15 @@
     <None Include="ClrMame\verified_game.dat">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
+    <None Include="SplitSet\TestLibrary\my other pretty rom %28EN%29.zip">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="SplitSet\TestLibrary\my pretty rom %28EN%29.zip">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="SplitSet\TestLibrary\[BIOS] toto.zip" />
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Parsers\" />
-  </ItemGroup>
+  <ItemGroup />
   <ItemGroup>
     <None Include="ClrMame\clrmame_header.dat">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
@@ -99,6 +105,10 @@
     <ProjectReference Include="..\AppConfig\AppConfig.csproj">
       <Project>{406150EC-C2B6-4931-89D4-96775C662493}</Project>
       <Name>AppConfig</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\EmulatorModules\EmulatorModules.csproj">
+      <Project>{3942ecd5-99b4-4961-997e-5553b2ed7a1d}</Project>
+      <Name>EmulatorModules</Name>
     </ProjectReference>
     <ProjectReference Include="..\Parsers\Parsers.csproj">
       <Project>{dda06a98-958f-40b2-b28a-19868074dd5d}</Project>
