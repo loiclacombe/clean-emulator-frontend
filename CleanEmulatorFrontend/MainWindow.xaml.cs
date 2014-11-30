@@ -40,6 +40,7 @@ namespace CleanEmulatorFrontend
             _systemsCache = _appLoader.LoadLibraries();
             SystemsTree.ItemsSource = _systemsCache.Groups;
             GamesGrid.ItemsSource = _displayed;
+            SelectDefaultSystem();
             InitEvents();
 
             WindowState = WindowState.Maximized;
@@ -47,7 +48,6 @@ namespace CleanEmulatorFrontend
 
         private void InitEvents()
         {
-            SelectDefaultSystem();
             SystemSelectionEvents();
             GameLaunchEvents();
 
@@ -135,31 +135,10 @@ namespace CleanEmulatorFrontend
             {
                 var game = GamesGrid.SelectedItem as Game;
                 if (game == null) return;
-                ILauncher launcher = FindLauncher(game);
+                ILauncher launcher = game.System.Emulator.Launcher;
                 Process process = launcher.StartGame(game);
                 process.WaitForExit();
             }
-        }
-
-        private ILauncher FindLauncher(Game game)
-        {
-            return game.System.Emulator.Launcher;
-        }
-
-        [DllImport("user32.dll")]
-        private static extern IntPtr SetFocus(IntPtr hWnd);
-
-        [DllImport("user32.dll")]
-        [return: MarshalAs(UnmanagedType.Bool)]
-        private static extern bool SetForegroundWindow(IntPtr hWnd);
-
-
-        public void FullScreen(Process process)
-        {
-            Thread.Sleep(5000);
-            _logger.DebugFormat("Process handle : {0}", process.MainWindowHandle);
-            SetForegroundWindow(process.MainWindowHandle);
-            SetFocus(process.MainWindowHandle);
         }
 
         private static bool AllWordsAreContainedIn(Game game, IEnumerable<string> words)
