@@ -74,6 +74,12 @@ namespace CleanEmulatorFrontend
                 .Where(k => k.Key == Key.Enter)
                 .Subscribe(o => LaunchSelectedGame());
 
+            //prevent movement to next line on press enter
+            GamesGrid.Events()
+                .PreviewKeyDown
+                .Where(k => k.Key == Key.Enter)
+                .Subscribe(e => e.Handled = true);
+
             GamesGrid.Events()
                 .MouseDoubleClick
                 .Select(e => e.MouseDevice.DirectlyOver)
