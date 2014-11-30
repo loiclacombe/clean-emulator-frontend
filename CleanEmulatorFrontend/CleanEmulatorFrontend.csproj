@@ -41,9 +41,6 @@
     <Reference Include="Castle.Core">
       <HintPath>..\packages\Castle.Core.3.2.0\lib\net45\Castle.Core.dll</HintPath>
     </Reference>
-    <Reference Include="ICSharpCode.SharpZipLib">
-      <HintPath>..\packages\SharpZipLib.0.86.0\lib\20\ICSharpCode.SharpZipLib.dll</HintPath>
-    </Reference>
     <Reference Include="Irony, Version=1.0.0.0, Culture=neutral, PublicKeyToken=ca48ace7223ead47, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\packages\Irony.0.9.0\lib\net45\Irony.dll</HintPath>
@@ -54,6 +51,10 @@
     <Reference Include="Lucene.Net">
       <HintPath>..\packages\Lucene.Net.3.0.3\lib\NET40\Lucene.Net.dll</HintPath>
     </Reference>
+    <Reference Include="Microsoft.Reactive.Testing">
+      <HintPath>..\packages\Rx-Testing.2.2.5\lib\net45\Microsoft.Reactive.Testing.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.VisualStudio.QualityTools.UnitTestFramework, Version=10.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL" />
     <Reference Include="Microsoft.VisualStudio.Shell.11.0, Version=11.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
       <Private>True</Private>
       <HintPath>..\packages\IronMeta.3.8.5381.23358\lib\net45\Microsoft.VisualStudio.Shell.11.0.dll</HintPath>
@@ -71,6 +72,21 @@
     </Reference>
     <Reference Include="Ninject.Extensions.Factory">
       <HintPath>..\packages\Ninject.Extensions.Factory.3.2.1.0\lib\net45-full\Ninject.Extensions.Factory.dll</HintPath>
+    </Reference>
+    <Reference Include="ReactiveUI">
+      <HintPath>..\packages\reactiveui-core.6.2.1.1\lib\Net45\ReactiveUI.dll</HintPath>
+    </Reference>
+    <Reference Include="ReactiveUI.Events">
+      <HintPath>..\packages\reactiveui-events.6.2.1.1\lib\net45\ReactiveUI.Events.dll</HintPath>
+    </Reference>
+    <Reference Include="ReactiveUI.Testing">
+      <HintPath>..\packages\reactiveui-testing.6.2.1.1\lib\net45\ReactiveUI.Testing.dll</HintPath>
+    </Reference>
+    <Reference Include="Seterlund.CodeGuard">
+      <HintPath>..\packages\Seterlund.CodeGuard.2.3.4\lib\net40\Seterlund.CodeGuard.dll</HintPath>
+    </Reference>
+    <Reference Include="Splat">
+      <HintPath>..\packages\Splat.1.5.1\lib\Net45\Splat.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Configuration" />
@@ -115,6 +131,8 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="Lucent\LucentFilterProvider.cs" />
+    <Compile Include="Properties\Annotations.cs" />
     <Compile Include="SystemsCache.cs" />
     <Compile Include="TreeViewExtensions.cs" />
     <Compile Include="UIUtility.cs" />
@@ -180,17 +198,17 @@
       <Project>{406150EC-C2B6-4931-89D4-96775C662493}</Project>
       <Name>AppConfig</Name>
     </ProjectReference>
-    <ProjectReference Include="..\EmulatorModules\EmulatorModules.csproj">
+    <ProjectReference Include="..\Launchers\Launchers.csproj">
       <Project>{3942ECD5-99B4-4961-997E-5553B2ED7A1D}</Project>
-      <Name>EmulatorModules</Name>
+      <Name>Launchers</Name>
     </ProjectReference>
     <ProjectReference Include="..\Parsers\Parsers.csproj">
       <Project>{dda06a98-958f-40b2-b28a-19868074dd5d}</Project>
       <Name>Parsers</Name>
     </ProjectReference>
-    <ProjectReference Include="..\SetData\GamesData.csproj">
+    <ProjectReference Include="..\SystemsData\SystemsData.csproj">
       <Project>{F1E8E9A7-7B34-4095-9DBC-AE0263D6B59C}</Project>
-      <Name>GamesData</Name>
+      <Name>SystemsData</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

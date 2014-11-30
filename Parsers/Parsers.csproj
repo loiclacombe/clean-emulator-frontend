@@ -81,13 +81,9 @@
       <Project>{406150EC-C2B6-4931-89D4-96775C662493}</Project>
       <Name>AppConfig</Name>
     </ProjectReference>
-    <ProjectReference Include="..\EmulatorModules\EmulatorModules.csproj">
-      <Project>{3942ecd5-99b4-4961-997e-5553b2ed7a1d}</Project>
-      <Name>EmulatorModules</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\SetData\GamesData.csproj">
+    <ProjectReference Include="..\SystemsData\SystemsData.csproj">
       <Project>{F1E8E9A7-7B34-4095-9DBC-AE0263D6B59C}</Project>
-      <Name>GamesData</Name>
+      <Name>SystemsData</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

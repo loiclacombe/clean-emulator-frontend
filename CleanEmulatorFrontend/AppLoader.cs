@@ -1,35 +1,26 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Configuration;
 using System.IO;
 using System.Linq;
 using System.Reflection;
-using System.Resources;
 using System.Xml.Serialization;
-using AppConfig;
 using Castle.Core.Internal;
 using EmulatorModules;
 using GamesData;
 using GamesData.DatData;
-using Lucene.Net.Analysis;
 using Lucene.Net.Documents;
 using Lucene.Net.Index;
-using Lucene.Net.Store;
-using Parsers;
-using ClrMame = Parsers.ClrMame;
-using SplitSet = Parsers.SplitSet;
-using EmulatedSystem = GamesData.EmulatedSystem;
-using Higan = Parsers.Higan;
+using Parsers.Higan;
 
 namespace CleanEmulatorFrontend
 {
     public class AppLoader
     {
-        private readonly Func<IndexWriter> _indexWriterProviderFunc;
         private readonly Func<SystemsCache> _cacheProvider;
-        private Higan.Library _higanLibrary;
+        private readonly Library _higanLibrary;
+        private readonly Func<IndexWriter> _indexWriterProviderFunc;
 
-        public AppLoader(Higan.Library higanLibrary, Func<IndexWriter> indexWriterProviderFunc,
+        public AppLoader(Library higanLibrary, Func<IndexWriter> indexWriterProviderFunc,
             Func<SystemsCache> cacheProvider)
         {
             _higanLibrary = higanLibrary;
@@ -40,45 +31,48 @@ namespace CleanEmulatorFrontend
 
         public SystemsCache LoadLibraries()
         {
-            SystemConfigRoot systemConfigRoot=ReadEmuConfig();
+            SystemConfigRoot systemConfigRoot = ReadEmuConfig();
 
-            var emulators= systemConfigRoot.Emulator.ToDictionary(emulator => emulator.Name);
-            foreach (var emulator in systemConfigRoot.Emulator)
+            Dictionary<string, Emulator> emulators = systemConfigRoot.Emulator.ToDictionary(emulator => emulator.Name);
+            foreach (Emulator emulator in systemConfigRoot.Emulator)
             {
-                emulator.Launcher=new GenericLauncher(emulator);
+                emulator.Launcher = new GenericLauncher(emulator);
             }
 
-            foreach (var systemGroup in systemConfigRoot.SystemGroup)
+            foreach (SystemGroup systemGroup in systemConfigRoot.SystemGroup)
             {
-                foreach (var emulatedSystem in systemGroup.EmulatedSystem)
+                foreach (EmulatedSystem emulatedSystem in systemGroup.EmulatedSystem)
                 {
-                    emulatedSystem.Emulator = emulators[emulatedSystem.CompatibleEmulator.Name];
-                    var libraryClass = emulatedSystem.CompatibleEmulator.LibraryClass;
-
-                    if (libraryClass == typeof(SplitSet.Library).FullName)
-                    {
-                        var library=new SplitSet.Library();
-                        library.Parse(emulatedSystem);
-                    }
-                    else if (libraryClass == typeof(Higan.Library).FullName)
-                    {
-                        _higanLibrary.Parse(emulatedSystem);
-                    }
-
+                    ReadSystem(emulatedSystem, emulators);
                 }
             }
 
 
-            var cacheProvider = _cacheProvider();
+            SystemsCache cacheProvider = _cacheProvider();
             cacheProvider.Groups = systemConfigRoot.SystemGroup;
             return cacheProvider;
         }
 
+        private void ReadSystem(EmulatedSystem emulatedSystem, Dictionary<string, Emulator> emulators)
+        {
+            emulatedSystem.Emulator = emulators[emulatedSystem.CompatibleEmulator.Name];
+            string libraryClass = emulatedSystem.CompatibleEmulator.LibraryClass;
+
+            if (libraryClass == typeof (Parsers.SplitSet.Library).FullName)
+            {
+                var library = new Parsers.SplitSet.Library();
+                library.Parse(emulatedSystem);
+            }
+            else if (libraryClass == typeof (Library).FullName)
+            {
+                _higanLibrary.Parse(emulatedSystem);
+            }
+        }
+
         private SystemConfigRoot ReadEmuConfig()
         {
-
-            var assembly = Assembly.GetAssembly(typeof(SystemConfigRoot));
-            using (var stream = assembly.GetManifestResourceStream("GamesData.emuconfig.xml"))
+            Assembly assembly = Assembly.GetAssembly(typeof (SystemConfigRoot));
+            using (Stream stream = assembly.GetManifestResourceStream("GamesData.emuconfig.xml"))
             {
                 var serializer = new XmlSerializer(typeof (SystemConfigRoot));
                 var systemConfigRoot = serializer.Deserialize(stream) as SystemConfigRoot;
@@ -88,22 +82,24 @@ namespace CleanEmulatorFrontend
 
         public void InitLucent(SystemsCache systemsCache, LibraryData data)
         {
-            systemsCache.GameDictionary = new Dictionary<Guid, Game>();
-            var writer = _indexWriterProviderFunc();
+            var dict = new Dictionary<Guid, Game>();
+            IndexWriter writer = _indexWriterProviderFunc();
             data.Systems.ForEach(s => s.Games.ForEach(g =>
-            {
-                var document = new Document();
-                document.Add(new Field("system", s.Description, Field.Store.NO, Field.Index.ANALYZED));
-                document.Add(new Field("game", g.Description, Field.Store.NO, Field.Index.ANALYZED));
-                document.Add(new Field("guid", g.Guid.ToString(), Field.Store.YES, Field.Index.NOT_ANALYZED));
-                writer.AddDocument(document);
-                systemsCache.GameDictionary.Add(g.Guid, g);
-            }
+                                                      {
+                                                          var document = new Document();
+                                                          document.Add(new Field("system", s.Description, Field.Store.NO,
+                                                              Field.Index.ANALYZED));
+                                                          document.Add(new Field("game", g.Description, Field.Store.NO,
+                                                              Field.Index.ANALYZED));
+                                                          document.Add(new Field("guid", g.Guid.ToString(),
+                                                              Field.Store.YES, Field.Index.NOT_ANALYZED));
+                                                          writer.AddDocument(document);
+                                                          dict.Add(g.Guid, g);
+                                                      }
                 ));
 
             writer.Optimize();
             writer.Dispose();
         }
-
     }
 }

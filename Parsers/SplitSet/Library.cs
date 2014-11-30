@@ -14,6 +14,10 @@ namespace Parsers.SplitSet
         public void Parse(EmulatedSystem emulatedSystem)
         {
             var datPath = ConfigurationManager.AppSettings[emulatedSystem.CompatibleEmulator.RomFolderKey];
+            if (datPath == null)
+            {
+                throw new InvalidDataException(string.Format("Dat library {0} is not in configuration", emulatedSystem.CompatibleEmulator.RomFolderKey));
+            }
             Parse(emulatedSystem, datPath);
         }
 
@@ -21,7 +25,7 @@ namespace Parsers.SplitSet
         {
             var directoryInfo = new DirectoryInfo(datPath);
             var roms = directoryInfo.GetFiles("*." + SupportedExtension, SearchOption.AllDirectories)
-                .Where(r => !r.FullName.Contains("[BIOS]"));
+                .Where(r => !IsBios(r));
             var games = roms.Select(rom => new Game()
                                            {
                                                Description = (Path.GetFileNameWithoutExtension(rom.FullName)),
@@ -30,6 +34,11 @@ namespace Parsers.SplitSet
                                            });
 
             emulatedSystem.Games = games.ToList();
+        }
+
+        private static bool IsBios(FileInfo r)
+        {
+            return r.FullName.Contains("[BIOS]");
         }
     }
 }

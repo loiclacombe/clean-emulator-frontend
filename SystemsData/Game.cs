@@ -1,9 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Runtime.ExceptionServices;
+using GamesData.DatData;
 
-namespace GamesData.DatData
+namespace GamesData
 {
-    public class Game : IComparable<Game>
+    public class Game
     {
         public readonly Guid Guid = Guid.NewGuid();
         public string Description { get; set; }
@@ -12,7 +14,15 @@ namespace GamesData.DatData
         public EmulatedSystem System { get; set; }
         public int CompareTo(Game other)
         {
-            return this.Description.CompareTo(other.Description);
+            return Description.CompareTo(other.Description);
+        }
+    }
+
+    public class GameComparer : IComparer<Game>
+    {
+        public int Compare(Game x, Game y)
+        {
+            return x.Description.CompareTo(y.Description);
         }
     }
 }

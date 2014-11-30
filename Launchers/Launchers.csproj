@@ -7,8 +7,8 @@
     <ProjectGuid>{3942ECD5-99B4-4961-997E-5553B2ED7A1D}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>EmulatorModules</RootNamespace>
-    <AssemblyName>EmulatorModules</AssemblyName>
+    <RootNamespace>Launchers</RootNamespace>
+    <AssemblyName>Launchers</AssemblyName>
     <TargetFrameworkVersion>v4.5.1</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <TargetFrameworkProfile />
@@ -48,9 +48,9 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\SetData\GamesData.csproj">
+    <ProjectReference Include="..\SystemsData\SystemsData.csproj">
       <Project>{F1E8E9A7-7B34-4095-9DBC-AE0263D6B59C}</Project>
-      <Name>GamesData</Name>
+      <Name>SystemsData</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>

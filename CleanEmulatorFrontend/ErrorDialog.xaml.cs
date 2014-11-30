@@ -36,5 +36,15 @@ namespace CleanEmulatorFrontend
         {
             Close();
         }
+
+        public static void DisplayException(Exception e)
+        {
+            string message = e.Message + "\n" + e.StackTrace;
+            if (e.InnerException != null)
+            {
+                message += "\n" + e.InnerException.Message + "\n" + e.InnerException.StackTrace;
+            }
+            new ErrorDialog("Startup error", message);
+        }
     }
 }

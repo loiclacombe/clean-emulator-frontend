@@ -3,10 +3,9 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:gamesData="clr-namespace:GamesData;assembly=GamesData"
         xmlns:SystemNode="clr-namespace:GamesData.DatData;assembly=GamesData"
-        Title="Clean Emulator Frontend"
-        KeyDown="MainWindow_OnKeyDown">
+        Title="Clean Emulator Frontend">
     <Window.Resources>
-        <DataTemplate DataType="{x:Type SystemNode:Game}">
+        <DataTemplate DataType="{x:Type gamesData:Game}">
             <TextBlock Text="{Binding Path=Description}"
                        ToolTip="{Binding Path=Description}" />
         </DataTemplate>
@@ -30,13 +29,10 @@
                 <RowDefinition Height="*"></RowDefinition>
             </Grid.RowDefinitions>
 
-            <TextBox Grid.Column="0" Grid.Row="0"  Name="SearchSystemBlock" HorizontalAlignment="Stretch"
-                       Text="Search system..." />
             <TextBox Grid.Column="1" Grid.Row="0"  Name="SearchGameBlock" HorizontalAlignment="Stretch"
-                       Text="Search game..." KeyDown="SearchGameBlock_OnKeyDown" />
-            <TreeView HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Grid.Column="0" Grid.Row="1"
-                       x:Name="SystemsTree"
-                      SelectedItemChanged="_systemsTree_SelectedItemChanged" >
+                       Text="Search game..." />
+            <TreeView HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Grid.Column="0" Grid.Row="0" Grid.RowSpan="2"
+                       x:Name="SystemsTree">
                 <TreeView.Resources>
                     <HierarchicalDataTemplate DataType="{x:Type gamesData:SystemGroup}"
                                   ItemsSource="{Binding Path=EmulatedSystem}">
@@ -52,9 +48,6 @@
             </TreeView>
             <DataGrid Name="GamesGrid" Grid.Column="1" Grid.Row="1" HorizontalAlignment="Stretch"
                       VerticalAlignment="Stretch" Margin="0.2,0,-0.4,0.2"
-                      MouseDoubleClick="_gamesGrid_MouseDoubleClick"
-                      KeyDown="GamesGrid_OnKeyDown"
-                      KeyUp="GamesGrid_OnKeyUp"
                       IsReadOnly="True" AutoGenerateColumns="False"
                       IsTextSearchEnabled="True" TextSearch.TextPath="Description">
                 <DataGrid.Columns>

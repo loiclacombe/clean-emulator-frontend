@@ -7,7 +7,7 @@
       <CompatibleEmulator
         Name="nestopia"
         LibraryClass="Parsers.SplitSet.Library"
-        RomFolderKey="higan.famicom.library"/>
+        RomFolderKey="nestopia.famicom.library"/>
     </EmulatedSystem>
 
     <EmulatedSystem Description="Game Boy">
