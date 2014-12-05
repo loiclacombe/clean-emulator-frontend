@@ -2,31 +2,30 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using GamesData;
 using GamesData.DatData;
 using Irony.Parsing;
 using log4net;
 
 namespace Parsers.ClrMame
 {
-    public class Library
+    public class DatParser : IDatParser
     {
-        private static readonly ILog Logger = LogManager.GetLogger(typeof(Library));
-        private readonly DatGrammar _datGrammar;
+        private static readonly ILog Logger = LogManager.GetLogger(typeof(DatParser));
+        private DatGrammar _datGrammar;
         private const string ClrMamePro = "clrmamepro";
         private const string Game = "game";
 
-        public Library(DatGrammar datGrammar)
+        public DatParser(DatGrammar datGrammar)
         {
             _datGrammar = datGrammar;
         }
 
-
-        public void Parse(EmulatedSystem emulatedSystem, string datFile)
+        public Dat Parse(string datfolder)
         {
-            Logger.DebugFormat("Parsing {0}", datFile);
-            var parser = new Irony.Parsing.Parser(_datGrammar);
-            using (var reader = new StreamReader(new FileStream(datFile, FileMode.Open)))
+            Logger.DebugFormat("Parsing {0}", datfolder);
+            var parser = new Parser(_datGrammar);
+            var dat = new Dat();
+            using (var reader = new StreamReader( new FileStream(datfolder, FileMode.Open)))
             {
                 ParseTree parseTree = parser.Parse(reader.ReadToEnd());
                 parseTree.ParserMessages.ForEach(pm => { Console.WriteLine(string.Format("{0} {1}", pm.Message, pm.Location)); });
@@ -34,26 +33,35 @@ namespace Parsers.ClrMame
 
                 ParseTreeNodeList rootList = parseTreeNode.ChildNodes;
 
+                dat.Systems=new List<EmulatedSystem>()
+                                {
+                                    new EmulatedSystem()
+                                        {
+                                            ShortName = Path.GetFileNameWithoutExtension(datfolder),
+                                        }
+                                };
 
                 foreach (ParseTreeNode node in rootList)
                 {
-                    TryParseClrMameBlock(node, emulatedSystem);
-                    TryParseGameBlock(node, emulatedSystem);
+                    TryParseClrMameBlock(node, dat);
+                    TryParseGameBlock(node, dat);
                 }
+                return dat;
             }
         }
 
-        private void TryParseClrMameBlock(ParseTreeNode node, EmulatedSystem emulatedSystem)
+        private void TryParseClrMameBlock(ParseTreeNode node, Dat dat)
         {
             if (PropertyName(node) != ClrMamePro)
             {
                 return;
             }
 
-            emulatedSystem.LibraryMetadata = ExtractValueProperties(node);
+            dat.Metadata = ExtractValueProperties(node);
+            dat.Systems[0].Description = dat.Metadata["description"];
         }
 
-        private void TryParseGameBlock(ParseTreeNode gameNode, EmulatedSystem emulatedSystem)
+        private void TryParseGameBlock(ParseTreeNode gameNode, Dat dat)
         {
             if (PropertyName(gameNode) != Game)
             {
@@ -62,14 +70,15 @@ namespace Parsers.ClrMame
 
             IDictionary<string, string> properties = ExtractValueProperties(gameNode);
             var roms = new List<Rom>();
-            var game = new GamesData.Game
-            {
-                Description = properties["description"],
-                LaunchPath = properties["name"]
-            };
+            var game = new Game
+                           {
+                               Description = properties["description"],
+                               LaunchPath = properties["name"],
+                               Roms = roms
+                           };
 
             roms.AddRange(ValueListNodes(gameNode).Where(IsRom).Select(ParseRom));
-            emulatedSystem.Games.Add(game);
+            dat.Systems[0].Games.Add(game);
         }
 
         private static Rom ParseRom(ParseTreeNode romNode)
@@ -77,9 +86,9 @@ namespace Parsers.ClrMame
             IDictionary<string, string> properties;
             properties = ExtractValueProperties(romNode);
             var rom = new Rom
-            {
-                Name = properties["name"]
-            };
+                          {
+                              Name = properties["name"]
+                          };
             return rom;
         }
 

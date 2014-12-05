@@ -4,6 +4,7 @@ using GamesData;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Parsers.ClrMame;
 using Parser = Parsers.ClrMame.Parser;
+using Library = Parsers.ClrMame.Library;
 
 namespace CleanEmulatorFrontend.Test.ClrMame
 {
@@ -34,8 +35,7 @@ namespace CleanEmulatorFrontend.Test.ClrMame
             snesSystem.Description.Should().BeNull();
             var firstGame=games[0];
             firstGame.Description.Should().Be("ACME Animation Factory (USA)");
-            firstGame.Roms.Count.Should().Be(1);
-            firstGame.Roms[0].Name.Should().Be("ACME Animation Factory (USA).sfc");
+            firstGame.LaunchPath.Should().Be("ACME Animation Factory (USA)");
         }
 
         [TestMethod]

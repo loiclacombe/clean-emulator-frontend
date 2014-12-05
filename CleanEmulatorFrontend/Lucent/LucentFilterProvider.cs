@@ -16,14 +16,14 @@ namespace CleanEmulatorFrontend.Lucent
     public class LucentFilterProvider
     {
         private readonly Func<Directory> _directoryProvider;
-        public IDictionary<Guid, Game> GameDictionary;
+        public IDictionary<Guid, GamesData.Game> GameDictionary;
 
         public LucentFilterProvider(Func<Directory> directoryProvider)
         {
             _directoryProvider = directoryProvider;
         }
 
-        public IEnumerable<Game> LucentFilter(string search)
+        public IEnumerable<GamesData.Game> LucentFilter(string search)
         {
             var analyzer = new StandardAnalyzer(Lucene.Net.Util.Version.LUCENE_30);
             var searcher = new IndexSearcher(_directoryProvider());
@@ -31,7 +31,7 @@ namespace CleanEmulatorFrontend.Lucent
 
             Query query = parser.Parse(search);
             TopDocs hits = searcher.Search(query, 5000);
-            var foundGames = new SortedSet<Game>();
+            var foundGames = new SortedSet<GamesData.Game>();
             for (int i = 0; i < hits.TotalHits; i++)
             {
                 // get the document from index

@@ -1,20 +1,22 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Configuration;
 using System.IO;
 using System.Linq;
 using GamesData;
-using GamesData.DatData;
+using Seterlund.CodeGuard;
 
 namespace Parsers.Higan
 {
-    public class Library : ILibrary
+    public class Library
     {
-        private const string _extension = ".sfc";
+        private const string Extension = ".sfc";
 
-
-        public void Parse(EmulatedSystem emulatedSystem)
+        public void Parse(string libraryFolderKey,
+            EmulatedSystem emulatedSystem)
         {
-            string datPath = ConfigurationManager.AppSettings[emulatedSystem.CompatibleEmulator.RomFolderKey];
+            string datPath = ConfigurationManager.AppSettings[libraryFolderKey];
+            Guard.That(datPath).IsNotNull();
 
             Parse(emulatedSystem, datPath);
         }
@@ -25,14 +27,19 @@ namespace Parsers.Higan
             DirectoryInfo[] folders = directoryInfo.GetDirectories("*.*", SearchOption.AllDirectories);
 
 
-            IEnumerable<DirectoryInfo> roms = folders.Where(f => f.FullName.EndsWith(_extension));
-            List<Game> games = roms.Select(rom => new Game
+            IEnumerable<DirectoryInfo> roms = folders.Where(IsSfcRom());
+            var games = roms.Select(rom => new Game
                                                   {
                                                       Description = (Path.GetFileNameWithoutExtension(rom.FullName)),
                                                       LaunchPath = rom.FullName,
                                                       System = emulatedSystem
                                                   }).ToList();
-            emulatedSystem.Games = games;
+            games.ForEach(emulatedSystem.Games.Add);
+        }
+
+        private static Func<DirectoryInfo, bool> IsSfcRom()
+        {
+            return f => f.FullName.EndsWith(Extension);
         }
     }
 

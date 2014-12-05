@@ -10,19 +10,19 @@ namespace CleanEmulatorFrontend
     {
         public IEnumerable<SystemGroup> Groups { get; set; }
 
-        public IEnumerable<Game> FilterBySystem(EmulatedSystem emulatedSystem)
+        public IEnumerable<GamesData.Game> FilterBySystem(EmulatedSystem emulatedSystem)
         {
             var games = EmptySet();
             emulatedSystem.Games.ForEach(g => games.Add(g));
             return games;
         }
 
-        private static SortedSet<Game> EmptySet()
+        private static SortedSet<GamesData.Game> EmptySet()
         {
-            return new SortedSet<Game>(new GameComparer());
+            return new SortedSet<GamesData.Game>(new GameComparer());
         }
 
-        public IEnumerable<Game> FilterBySystemGroup(SystemGroup systemGroup)
+        public IEnumerable<GamesData.Game> FilterBySystemGroup(SystemGroup systemGroup)
         {
             var games = EmptySet();
             systemGroup.EmulatedSystem.ForEach(sg => sg.Games.ForEach(g => games.Add(g)));

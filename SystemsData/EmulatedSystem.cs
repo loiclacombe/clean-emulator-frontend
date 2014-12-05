@@ -5,19 +5,21 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Xml.Serialization;
 using GamesData.DatData;
+using ReactiveUI;
 
 namespace GamesData
 {
     public partial class EmulatedSystem
     {
-        private IList<Game> _games=new List<Game>();
+        private IList<Game> _games = new ReactiveList<Game>();
 
         [XmlIgnore]
         public Emulator Emulator { get; set; }
+
         [XmlIgnore]
-        public IList<Game> Games {
+        public IList<Game> Games
+        {
             get { return _games; }
-            set { _games = value; } 
         }
         [XmlIgnore]
         public IDictionary<string, string> LibraryMetadata { get; set; }

@@ -9,7 +9,7 @@
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>Parsers</RootNamespace>
     <AssemblyName>Parsers</AssemblyName>
-    <TargetFrameworkVersion>v4.5.1</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.5.2</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <TargetFrameworkProfile />
   </PropertyGroup>
@@ -40,6 +40,9 @@
     <Reference Include="log4net">
       <HintPath>..\packages\log4net.2.0.3\lib\net40-full\log4net.dll</HintPath>
     </Reference>
+    <Reference Include="Seterlund.CodeGuard">
+      <HintPath>..\packages\Seterlund.CodeGuard.2.3.4\lib\net40\Seterlund.CodeGuard.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Configuration" />
     <Reference Include="System.Core" />
@@ -67,7 +70,6 @@
     <Compile Include="ClrMame\Library.cs" />
     <Compile Include="ClrMame\Parser.cs" />
     <Compile Include="Higan\Library.cs" />
-    <Compile Include="ILibrary.cs" />
     <Compile Include="Mame\Library.cs" />
     <Compile Include="Mame\Mame.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -82,7 +84,7 @@
       <Name>AppConfig</Name>
     </ProjectReference>
     <ProjectReference Include="..\SystemsData\SystemsData.csproj">
-      <Project>{F1E8E9A7-7B34-4095-9DBC-AE0263D6B59C}</Project>
+      <Project>{f1e8e9a7-7b34-4095-9dbc-ae0263d6b59c}</Project>
       <Name>SystemsData</Name>
     </ProjectReference>
   </ItemGroup>

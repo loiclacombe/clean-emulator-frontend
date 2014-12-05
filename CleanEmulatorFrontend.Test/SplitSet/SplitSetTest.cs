@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Configuration;
 using System.Linq;
 using System.Text;
 using System.Collections.Generic;
@@ -6,6 +7,7 @@ using FluentAssertions;
 using GamesData;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Parsers.SplitSet;
+using Library = Parsers.SplitSet.Library;
 
 namespace CleanEmulatorFrontend.Test
 {
@@ -48,15 +50,17 @@ namespace CleanEmulatorFrontend.Test
         public void TestParse()
         {
             var result = new EmulatedSystem();
-            _library.Parse(result, "SplitSet\\TestLibrary");
+            ConfigurationManager.AppSettings["toto"] = "SplitSet\\TestLibrary";
+            _library.Parse("toto", result);
             var games = result.Games.ToList();
             games.Should().HaveCount(2);
             var firstGame = games[0];
-            firstGame.Description.Should().Be("my other pretty rom (EN)");
-            firstGame.LaunchPath.Should().EndWith("my other pretty rom (EN).zip");
+            firstGame.Description.Should().Be("my pretty rom (EN)");
+            firstGame.LaunchPath.Should().EndWith("my pretty rom (EN).zip");
+
             var secondGame = games[1];
-            secondGame.Description.Should().Be("my pretty rom (EN)");
-            secondGame.LaunchPath.Should().EndWith("my pretty rom (EN).zip");
+            secondGame.Description.Should().Be("my other pretty rom (EN)");
+            secondGame.LaunchPath.Should().EndWith("my other pretty rom (EN).zip");
         }
     }
 }

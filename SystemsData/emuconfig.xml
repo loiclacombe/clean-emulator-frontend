@@ -6,59 +6,58 @@
     <EmulatedSystem Description="Famicom">
       <CompatibleEmulator
         Name="nestopia"
-        LibraryClass="Parsers.SplitSet.Library"
-        RomFolderKey="nestopia.famicom.library"/>
+        LibraryName="split_famicom"/>
     </EmulatedSystem>
-
     <EmulatedSystem Description="Game Boy">
       <CompatibleEmulator
         Name="gambatte"
-        LibraryClass="Parsers.SplitSet.Library"
-        RomFolderKey="gambatte.gb.library"/>
+        LibraryName="split_gb" />
     </EmulatedSystem>
     <EmulatedSystem Description="Game Boy Color">
       <CompatibleEmulator
         Name="gambatte"
-        LibraryClass="Parsers.SplitSet.Library"
-        RomFolderKey="gambatte.gbc.library"/>
+        LibraryName="split_gbc" />
     </EmulatedSystem>
     <EmulatedSystem Description="Game Boy Avance">
       <CompatibleEmulator
         Name="mednafen"
-        LibraryClass="Parsers.SplitSet.Library"
-        RomFolderKey="mednafen.gba.library"/>
+        LibraryName="split_gba"/>
     </EmulatedSystem>
     <EmulatedSystem Description="Game Gear">
       <CompatibleEmulator
         Name="fusion"
-        LibraryClass="Parsers.SplitSet.Library"
-        RomFolderKey="fusion.gamegear.library"/>
+        LibraryName="split_gamegear" />
     </EmulatedSystem>
     <EmulatedSystem Description="Master System">
       <CompatibleEmulator
         Name="fusion"
-        LibraryClass="Parsers.SplitSet.Library"
-        RomFolderKey="fusion.mastersystem.library"/>
+        LibraryName="split_mastersystem" />
     </EmulatedSystem>
     <EmulatedSystem Description="Megadrive">
-      <CompatibleEmulator 
+      <CompatibleEmulator
         Name="fusion"
-        LibraryClass="Parsers.SplitSet.Library"
-        RomFolderKey="fusion.megadrive.library"/>
+        LibraryName="split_megadrive" />
     </EmulatedSystem>
     <EmulatedSystem Description="Nintendo 64">
       <CompatibleEmulator
         Name="project64"
-        LibraryClass="Parsers.SplitSet.Library"
-        RomFolderKey="project64.nintendo64.library"/>
+        LibraryName="split_nintendo64"/>
     </EmulatedSystem>
     <EmulatedSystem Description="Super Famicom">
       <CompatibleEmulator
         Name="higan"
-        LibraryClass="Parsers.Higan.Library"
-        RomFolderKey="higan.superfamicom.library"/>
+        LibraryName="higan_superfamicom"/>
     </EmulatedSystem>
-    
+
+  </SystemGroup>
+
+  <SystemGroup Description="Arcade" Enabled="false">
+    <EmulatedSystem Description="Mame">
+      <CompatibleEmulator
+        Name="mame"
+        LibraryName="mame"
+        Enabled="false"/>
+    </EmulatedSystem>
   </SystemGroup>
   <Emulator Name="higan" Description="Higan">
     <EmulatorPathKey>emulators.higan.path</EmulatorPathKey>
@@ -84,4 +83,50 @@
     <EmulatorPathKey>emulators.project64.path</EmulatorPathKey>
     <CliParameters>"{0}" -fullscreen</CliParameters>
   </Emulator>
+  <Emulator Name="mame" Description="Mame">
+    <EmulatorPathKey>emulators.mame.path</EmulatorPathKey>
+    <CliParameters>"{0}"</CliParameters>
+  </Emulator>
+
+  <Library
+    Name="split_famicom"
+    LibraryClass="Parsers.SplitSet.Library"
+    LibraryFolderKey="split.famicom.library"/>
+  <Library
+    Name="split_gb"
+    LibraryClass="Parsers.SplitSet.Library"
+    LibraryFolderKey="split.gb.library"/>
+  <Library
+    Name="split_gbc"
+    LibraryClass="Parsers.SplitSet.Library"
+    LibraryFolderKey="split.gbc.library"/>
+  <Library
+  Name="split_gba"
+  LibraryClass="Parsers.SplitSet.Library"
+  LibraryFolderKey="split.gba.library"/>
+  <Library
+    Name="split_gamegear"
+    LibraryClass="Parsers.SplitSet.Library"
+    LibraryFolderKey="split.gamegear.library"/>
+  <Library
+  Name="split_mastersystem"
+  LibraryClass="Parsers.SplitSet.Library"
+  LibraryFolderKey="split.mastersystem.library"/>
+  <Library
+  Name="split_megadrive"
+  LibraryClass="Parsers.SplitSet.Library"
+  LibraryFolderKey="split.megadrive.library"/>
+  <Library
+Name="split_nintendo64"
+LibraryClass="Parsers.SplitSet.Library"
+LibraryFolderKey="split.nintendo64.library"/>
+  <Library
+Name="higan_superfamicom"
+LibraryClass="Parsers.Higan.Library"
+LibraryFolderKey="higan.superfamicom.library"/>
+  <Library
+    Name="mame"
+    LibraryClass="Parsers.Mame.Library"
+    LibraryFolderKey="mame.all.library"/>
+
 </SystemConfigRoot>

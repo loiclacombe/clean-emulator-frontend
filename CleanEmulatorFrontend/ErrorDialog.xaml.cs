@@ -46,5 +46,10 @@ namespace CleanEmulatorFrontend
             }
             new ErrorDialog("Startup error", message);
         }
+
+        public static void DisplayError(string error)
+        {
+            new ErrorDialog("Error", error);
+        }
     }
 }

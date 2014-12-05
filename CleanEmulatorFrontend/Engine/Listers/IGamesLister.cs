@@ -3,14 +3,13 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using GamesData;
+using CleanEmulatorFrontend.Engine.Data;
 using GamesData.DatData;
 
-namespace Parsers
+namespace CleanEmulatorFrontend.Engine.Listers
 {
-    public interface ILibrary
+    public interface IGamesLister
     {
-
-        void Parse(EmulatedSystem emulatedSystem);
+        IList<Game> ListAll();
     }
 }

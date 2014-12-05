@@ -5,6 +5,7 @@ using GamesData;
 using GamesData.DatData;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Parsers.Higan;
+using Library = Parsers.Higan.Library;
 
 namespace CleanEmulatorFrontend.Test.Higan
 {

@@ -15,10 +15,14 @@
   </xs:complexType>
   <xs:complexType name="CompatibleEmulator">
     <xs:attribute name="Name" type="xs:string" />
-    <xs:attribute name="LibraryClass" type="xs:string" />
-    <xs:attribute name="RomFolderKey" type="xs:string" />
+    <xs:attribute name="LibraryName" type="xs:string" />
+    <xs:attribute name="Enabled" type="xs:boolean" default="true" />
   </xs:complexType>
-  
+  <xs:complexType name="Library">
+    <xs:attribute name="Name" type="xs:string" />
+    <xs:attribute name="LibraryClass" type="xs:string" />
+    <xs:attribute name="LibraryFolderKey" type="xs:string" />
+  </xs:complexType>
   <xs:complexType name="Emulator">
     <xs:sequence>
       <xs:element name="EmulatorPathKey" type="xs:string" />
@@ -32,6 +36,7 @@
       <xs:element name="EmulatedSystem" type="tns:EmulatedSystem" minOccurs="1" maxOccurs="unbounded"/>
     </xs:sequence>
     <xs:attribute name="Description" type="xs:string" />
+    <xs:attribute name="Enabled" type="xs:boolean" default="true"  />
   </xs:complexType>
   
   <xs:element name="SystemConfigRoot">
@@ -39,6 +44,7 @@
       <xs:sequence>
         <xs:element name="SystemGroup" type="tns:SystemGroup" minOccurs="1" maxOccurs="unbounded" />
         <xs:element name="Emulator" type="tns:Emulator" minOccurs="1" maxOccurs="unbounded" />
+        <xs:element name="Library" type="tns:Library" minOccurs="1" maxOccurs="unbounded" />
       </xs:sequence>
     </xs:complexType>
   </xs:element>

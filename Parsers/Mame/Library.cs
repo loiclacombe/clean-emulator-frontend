@@ -1,46 +1,65 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Configuration;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
-using System.Reactive.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Xml.Serialization;
 using GamesData;
-using GamesData.DatData;
+using Seterlund.CodeGuard;
 
 namespace Parsers.Mame
 {
-    public class Library : ILibrary
+    public class Library
     {
-        public LibraryData Parse(string datPath)
+        public EmulatedSystem Parse(EmulatedSystem emulatedSystem)
         {
-            using (var stream = new FileStream(datPath, FileMode.Open))
+            using (StreamReader stream = ReadMameDat().StandardOutput)
             {
-                var serializer = new XmlSerializer(typeof(mame));
-                var mameData = serializer.Deserialize(stream) as mame;
-                Debug.Assert(mameData != null, "mameData != null");
-                var games = mameData.game.Select(ConvertMameGame) ;
+                var serializer = new XmlSerializer(typeof (Mame));
+                var mameData = serializer.Deserialize(stream) as Mame;
+                Guard.That(mameData).IsNotNull();
+                mameData.Game
+                    .Select(g => g.AsGameDataOn(emulatedSystem))
+                    .AsParallel()
+                    .ForAll(
+                        g => emulatedSystem.Games.Add(g)
+                    );
 
-                var dat = new LibraryData ();
-                return dat;
+                return emulatedSystem;
             }
         }
 
-        public Game ConvertMameGame(game game)
+        private static Process ReadMameDat()
         {
-            return default(Game);
+            string mamePath = ConfigurationManager.AppSettings["emulators.Mame.path"];
+            var mameInfo = new FileInfo(mamePath);
+            var process = new Process
+                          {
+                              StartInfo =
+                              {
+                                  FileName = mamePath,
+                                  Arguments = "-listxml",
+                                  UseShellExecute = false,
+                                  CreateNoWindow = true,
+                                  RedirectStandardOutput = true,
+                                  WorkingDirectory = mameInfo.DirectoryName
+                              }
+                          };
+            process.Start();
+            return process;
         }
+    }
 
-        public LibraryData Parse()
+    public static class Utils
+    {
+        public static GamesData.Game AsGameDataOn(this Game xmlGame, EmulatedSystem emulatedSystem)
         {
-            throw new NotImplementedException();
-        }
-
-        public void Parse(EmulatedSystem emulatedSystem)
-        {
-            throw new NotImplementedException();
+            var game = new GamesData.Game
+                       {
+                           Description = xmlGame.Description,
+                           LaunchPath = xmlGame.Name,
+                           System = emulatedSystem
+                       };
+            return game;
         }
     }
 }

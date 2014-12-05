@@ -1,14 +1,15 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.IO;
 using System.Linq;
 using System.Reactive.Linq;
 using System.Reflection;
-using System.Runtime.InteropServices;
-using System.Threading;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
+using Castle.Core.Internal;
 using GamesData;
 using log4net;
 using ReactiveUI;
@@ -138,6 +139,14 @@ namespace CleanEmulatorFrontend
                 ILauncher launcher = game.System.Emulator.Launcher;
                 Process process = launcher.StartGame(game);
                 process.WaitForExit();
+                if (process.ExitCode != 0)
+                {
+                    var errors = process.StandardError.ReadToEnd();
+                    if (!errors.IsNullOrEmpty())
+                    {
+                        ErrorDialog.DisplayError(process.StartInfo + "\n" + errors);
+                    }
+                }
             }
         }
 

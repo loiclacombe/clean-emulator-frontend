@@ -1,6 +1,6 @@
 using System.Collections.Generic;
 
-namespace GamesData.DatData
+namespace GamesData
 {
     public class LibraryData
     {

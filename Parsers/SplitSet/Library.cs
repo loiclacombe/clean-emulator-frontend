@@ -1,39 +1,35 @@
-﻿using System.Configuration;
+﻿using System.Collections.Generic;
+using System.Configuration;
 using System.IO;
 using System.Linq;
 using GamesData;
-using GamesData.DatData;
 
 namespace Parsers.SplitSet
 {
-    public class Library : ILibrary
+    public class Library
     {
         private const string SupportedExtension = "zip";
-        private const string IgnoreRegex = "zip";
 
-        public void Parse(EmulatedSystem emulatedSystem)
+        public void Parse(string libraryFolderKey, EmulatedSystem emulatedSystem)
         {
-            var datPath = ConfigurationManager.AppSettings[emulatedSystem.CompatibleEmulator.RomFolderKey];
+            string datPath = ConfigurationManager.AppSettings[libraryFolderKey];
             if (datPath == null)
             {
-                throw new InvalidDataException(string.Format("Dat library {0} is not in configuration", emulatedSystem.CompatibleEmulator.RomFolderKey));
+                throw new InvalidDataException(string.Format("Dat library {0} is not in configuration",
+                    libraryFolderKey));
             }
-            Parse(emulatedSystem, datPath);
-        }
-
-        public void Parse(EmulatedSystem emulatedSystem, string datPath)
-        {
             var directoryInfo = new DirectoryInfo(datPath);
-            var roms = directoryInfo.GetFiles("*." + SupportedExtension, SearchOption.AllDirectories)
+            IEnumerable<FileInfo> roms = directoryInfo.GetFiles(
+                "*." + SupportedExtension, SearchOption.AllDirectories)
                 .Where(r => !IsBios(r));
-            var games = roms.Select(rom => new Game()
-                                           {
-                                               Description = (Path.GetFileNameWithoutExtension(rom.FullName)),
-                                               LaunchPath = rom.FullName,
-                                               System = emulatedSystem
-                                           });
-
-            emulatedSystem.Games = games.ToList();
+            roms.AsParallel().ForAll(rom => emulatedSystem.Games
+                .Add(new Game
+                {
+                    Description =
+                        (Path.GetFileNameWithoutExtension(rom.FullName)),
+                    LaunchPath = rom.FullName,
+                    System = emulatedSystem
+                }));
         }
 
         private static bool IsBios(FileInfo r)

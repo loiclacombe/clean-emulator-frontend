@@ -1,10 +1,11 @@
-﻿using System.Configuration;
+﻿using System;
+using System.Configuration;
 using System.Diagnostics;
+using System.IO;
 using GamesData;
-using GamesData.DatData;
 using log4net;
 
-namespace EmulatorModules
+namespace Launchers
 {
     public class GenericLauncher : ILauncher
     {
@@ -19,16 +20,21 @@ namespace EmulatorModules
         public Process StartGame(Game game)
         {
             Logger.InfoFormat("Starting {0}", game);
+            var emuPath = ConfigurationManager.AppSettings[_emulator.EmulatorPathKey];
+            var fileInfo = new FileInfo(emuPath);
             var process = new Process
                           {
                               StartInfo =
                               {
-                                  UseShellExecute = true,
-                                  FileName = ConfigurationManager.AppSettings[_emulator.EmulatorPathKey],
-                                  Arguments = Arguments(game)
-                              }
+                                  FileName = emuPath,
+                                  Arguments = Arguments(game),
+                                  UseShellExecute = false,
+                                  RedirectStandardOutput = true,
+                                  RedirectStandardError = true,
+                                  WorkingDirectory = fileInfo.DirectoryName                              }
                           };
             process.Start();
+
             return process;
         }
 
