@@ -8,22 +8,14 @@ using Seterlund.CodeGuard;
 
 namespace Parsers.Higan
 {
-    public class Library
+    public class Library : ILibrary
     {
         private const string Extension = ".sfc";
 
-        public void Parse(string libraryFolderKey,
-            EmulatedSystem emulatedSystem)
+        public void Parse(string libraryFolder, EmulatedSystem emulatedSystem)
         {
-            string datPath = ConfigurationManager.AppSettings[libraryFolderKey];
-            Guard.That(datPath).IsNotNull();
-
-            Parse(emulatedSystem, datPath);
-        }
-
-        public void Parse(EmulatedSystem emulatedSystem, string datPath)
-        {
-            var directoryInfo = new DirectoryInfo(datPath);
+            Guard.That(libraryFolder).IsNotNull();
+            var directoryInfo = new DirectoryInfo(libraryFolder);
             DirectoryInfo[] folders = directoryInfo.GetDirectories("*.*", SearchOption.AllDirectories);
 
 

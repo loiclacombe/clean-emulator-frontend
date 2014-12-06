@@ -50,17 +50,17 @@ namespace CleanEmulatorFrontend.Test
         public void TestParse()
         {
             var result = new EmulatedSystem();
-            ConfigurationManager.AppSettings["toto"] = "SplitSet\\TestLibrary";
-            _library.Parse("toto", result);
+            _library.Parse("SplitSet\\TestLibrary", result);
             var games = result.Games.ToList();
             games.Should().HaveCount(2);
             var firstGame = games[0];
-            firstGame.Description.Should().Be("my pretty rom (EN)");
-            firstGame.LaunchPath.Should().EndWith("my pretty rom (EN).zip");
+            firstGame.Description.Should().Be("my other pretty rom (EN)");
+            firstGame.LaunchPath.Should().EndWith("my other pretty rom (EN).zip");
 
             var secondGame = games[1];
-            secondGame.Description.Should().Be("my other pretty rom (EN)");
-            secondGame.LaunchPath.Should().EndWith("my other pretty rom (EN).zip");
+
+            secondGame.Description.Should().Be("my pretty rom (EN)");
+            secondGame.LaunchPath.Should().EndWith("my pretty rom (EN).zip");
         }
     }
 }

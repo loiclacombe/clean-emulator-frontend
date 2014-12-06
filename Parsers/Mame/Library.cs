@@ -8,9 +8,9 @@ using Seterlund.CodeGuard;
 
 namespace Parsers.Mame
 {
-    public class Library
+    public class Library: ILibrary
     {
-        public EmulatedSystem Parse(EmulatedSystem emulatedSystem)
+        public void Parse(string libraryFolder, EmulatedSystem emulatedSystem)
         {
             using (StreamReader stream = ReadMameDat().StandardOutput)
             {
@@ -24,7 +24,6 @@ namespace Parsers.Mame
                         g => emulatedSystem.Games.Add(g)
                     );
 
-                return emulatedSystem;
             }
         }
 

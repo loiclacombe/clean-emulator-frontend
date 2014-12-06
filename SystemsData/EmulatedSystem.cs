@@ -1,17 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Collections.Generic;
 using System.Xml.Serialization;
-using GamesData.DatData;
-using ReactiveUI;
 
 namespace GamesData
 {
     public partial class EmulatedSystem
     {
-        private IList<Game> _games = new ReactiveList<Game>();
+        private IList<Game> _games=new List<Game>();
 
         [XmlIgnore]
         public Emulator Emulator { get; set; }
@@ -20,6 +14,7 @@ namespace GamesData
         public IList<Game> Games
         {
             get { return _games; }
+            set { _games = value; }
         }
         [XmlIgnore]
         public IDictionary<string, string> LibraryMetadata { get; set; }

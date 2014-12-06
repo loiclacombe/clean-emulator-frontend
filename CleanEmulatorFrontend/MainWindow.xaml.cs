@@ -1,15 +1,12 @@
 ﻿using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics;
-using System.IO;
 using System.Linq;
 using System.Reactive.Linq;
 using System.Reflection;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
-using Castle.Core.Internal;
 using GamesData;
 using log4net;
 using ReactiveUI;
@@ -21,7 +18,7 @@ namespace CleanEmulatorFrontend
     /// </summary>
     public partial class MainWindow : Window
     {
-        private static readonly ILog _logger = LogManager.GetLogger(typeof (MainWindow));
+        private static readonly ILog Logger = LogManager.GetLogger(typeof (MainWindow));
 
         private readonly AppLoader _appLoader;
         private readonly ReactiveList<Game> _displayed = new ReactiveList<Game>();
@@ -70,22 +67,33 @@ namespace CleanEmulatorFrontend
 
         private void GameLaunchEvents()
         {
-            GamesGrid.Events()
+            var doubleClickedOnGame = GamesGrid.Events()
+                .MouseDoubleClick
+                .Select(e => e.MouseDevice.DirectlyOver)
+                .Where(e => e is FrameworkElement
+                            && ((FrameworkElement)e).Parent is DataGridCell)
+                .Where(e => OnlyOneGameIsSelected())
+                .Select(SelectedGame);
+            var pressedEnterToLaunchGame = GamesGrid.Events()
                 .KeyUp
                 .Where(k => k.Key == Key.Enter)
-                .Subscribe(o => LaunchSelectedGame());
+                .Where(e => OnlyOneGameIsSelected())
+                .Select(SelectedGame);
+
+            pressedEnterToLaunchGame
+                .Merge(doubleClickedOnGame)
+                .Subscribe(LaunchSelectedGame);
 
             //prevent movement to next line on press enter
             GamesGrid.Events()
                 .PreviewKeyDown
                 .Where(k => k.Key == Key.Enter)
                 .Subscribe(e => e.Handled = true);
+        }
 
-            GamesGrid.Events()
-                .MouseDoubleClick
-                .Select(e => e.MouseDevice.DirectlyOver)
-                .Where(e => e is FrameworkElement && ((FrameworkElement) e).Parent is DataGridCell)
-                .Subscribe(e => LaunchSelectedGame());
+        private Game SelectedGame(Object anything)
+        {
+            return GamesGrid.SelectedItem as Game;
         }
 
         private void FilterGames(string text)
@@ -130,24 +138,20 @@ namespace CleanEmulatorFrontend
         }
 
 
-        private void LaunchSelectedGame()
+        private void LaunchSelectedGame(Game game)
         {
-            if (GamesGrid.SelectedItems.Count == 1)
-            {
-                var game = GamesGrid.SelectedItem as Game;
-                if (game == null) return;
-                ILauncher launcher = game.System.Emulator.Launcher;
-                Process process = launcher.StartGame(game);
-                process.WaitForExit();
-                if (process.ExitCode != 0)
-                {
-                    var errors = process.StandardError.ReadToEnd();
-                    if (!errors.IsNullOrEmpty())
-                    {
-                        ErrorDialog.DisplayError(process.StartInfo + "\n" + errors);
-                    }
-                }
-            }
+            if (game == null) return;
+            game.Start()
+                .Where(p => p.ExitCode != 0
+                            && string.IsNullOrEmpty(p.ErrorMessage))
+                .Subscribe(
+                    process =>
+                        ErrorDialog.DisplayError(process.StartInfo + "\n" + process.ErrorMessage));
+        }
+
+        private bool OnlyOneGameIsSelected()
+        {
+            return GamesGrid.SelectedItems.Count == 1;
         }
 
         private static bool AllWordsAreContainedIn(Game game, IEnumerable<string> words)
@@ -172,14 +176,57 @@ namespace CleanEmulatorFrontend
 
                 selectMethod.Invoke(dObject, new object[] {true});
             }
-            catch (Exception)
+            catch (Exception e)
             {
+                Logger.Debug(e, e);
             }
         }
 
         private static bool IsCtrlAndK(KeyEventArgs e)
         {
             return e.Key == Key.K && (Keyboard.IsKeyDown(Key.LeftCtrl) || Keyboard.IsKeyDown(Key.RightCtrl));
+        }
+    }
+
+    public static class GameLaunchExt
+    {
+        public static IObservable<ExitedProcess> Start(this Game game)
+        {
+            Process process = game.System.Emulator.Launcher.StartGame(game);
+            return Observable.FromEventPattern(
+                ev => process.Exited += ev,
+                ev => process.Exited -= ev)
+                .Select(ev => ev.Sender as Process)
+                .Select(p => new ExitedProcess(p));
+        }
+    }
+
+    public class ExitedProcess
+    {
+        private readonly string _errorMessage;
+        private readonly int _exitCode;
+        private readonly ProcessStartInfo _startInfo;
+
+        public ExitedProcess(Process process)
+        {
+            _exitCode = process.ExitCode;
+            _errorMessage = process.StandardError.ReadToEnd();
+            _startInfo = process.StartInfo;
+        }
+
+        public ProcessStartInfo StartInfo
+        {
+            get { return _startInfo; }
+        }
+
+        public int ExitCode
+        {
+            get { return _exitCode; }
+        }
+
+        public string ErrorMessage
+        {
+            get { return _errorMessage; }
         }
     }
 }

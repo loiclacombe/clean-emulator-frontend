@@ -24,7 +24,7 @@ namespace CleanEmulatorFrontend.Test.Higan
         public void TestParse()
         {
             var snesSystem = new EmulatedSystem();
-            _library.Parse(snesSystem, "Higan\\TestLibrary");
+            _library.Parse("Higan\\TestLibrary", snesSystem);
             snesSystem.Games.Should().HaveCount(2);
             var games=snesSystem.Games.ToList();
             games[0].Description.Should().Be("Akumajou Dracula (Japan)");

@@ -3,22 +3,18 @@ using System.Configuration;
 using System.IO;
 using System.Linq;
 using GamesData;
+using Seterlund.CodeGuard;
 
 namespace Parsers.SplitSet
 {
-    public class Library
+    public class Library : ILibrary
     {
         private const string SupportedExtension = "zip";
 
-        public void Parse(string libraryFolderKey, EmulatedSystem emulatedSystem)
+        public void Parse(string libraryFolder, EmulatedSystem emulatedSystem)
         {
-            string datPath = ConfigurationManager.AppSettings[libraryFolderKey];
-            if (datPath == null)
-            {
-                throw new InvalidDataException(string.Format("Dat library {0} is not in configuration",
-                    libraryFolderKey));
-            }
-            var directoryInfo = new DirectoryInfo(datPath);
+            Guard.That(libraryFolder).IsNotNull();
+            var directoryInfo = new DirectoryInfo(libraryFolder);
             IEnumerable<FileInfo> roms = directoryInfo.GetFiles(
                 "*." + SupportedExtension, SearchOption.AllDirectories)
                 .Where(r => !IsBios(r));

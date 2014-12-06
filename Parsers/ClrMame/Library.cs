@@ -9,7 +9,7 @@ using log4net;
 
 namespace Parsers.ClrMame
 {
-    public class Library
+    public class Library : ILibrary
     {
         private static readonly ILog Logger = LogManager.GetLogger(typeof(Library));
         private readonly DatGrammar _datGrammar;
@@ -22,7 +22,7 @@ namespace Parsers.ClrMame
         }
 
 
-        public void Parse(EmulatedSystem emulatedSystem, string datFile)
+        public void Parse(string datFile, EmulatedSystem emulatedSystem)
         {
             Logger.DebugFormat("Parsing {0}", datFile);
             var parser = new Irony.Parsing.Parser(_datGrammar);
