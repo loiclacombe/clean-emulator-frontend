@@ -17,7 +17,6 @@ namespace OtherParsers.SplitSet
             Guard.That(library.Folder).IsNotNull();
             var directoryInfo = new DirectoryInfo(library.Folder);
 
-
             var extensions = new HashSet<string> {DefaultExtension};
             if (library.RomExtension != null)
             {
@@ -26,7 +25,6 @@ namespace OtherParsers.SplitSet
                     extensions.Add("." + extension);
                 }
             }
-
 
             IEnumerable<FileInfo> roms = directoryInfo.GetFiles(
                 "*.*", SearchOption.AllDirectories)

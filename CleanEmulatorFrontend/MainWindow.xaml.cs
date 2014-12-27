@@ -22,11 +22,11 @@ namespace CleanEmulatorFrontend
         private static readonly ILog Logger = LogManager.GetLogger(typeof (MainWindow));
 
         private readonly AppLoader _appLoader;
-        private readonly ReactiveList<Game> _displayed = new ReactiveList<Game>();
-        private readonly Random _random = new Random();
+        private readonly Random _random;
 
         private IEnumerable<Game> _all = new List<Game>();
         private LoadedSystems _loadedSystems;
+        private readonly ReactiveList<Game> _displayed = new ReactiveList<Game>();
 
         public MainWindow(AppLoader appLoader, Random random)
         {

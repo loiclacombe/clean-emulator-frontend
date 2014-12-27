@@ -24,6 +24,7 @@ namespace CleanEmulatorFrontend.Test
         {
             _library = new Library();
             _xmlLibrary.ResetCalls();
+            _xmlLibrary.CallBase = true;
         }
 
         #region Additional test attributes
@@ -53,17 +54,24 @@ namespace CleanEmulatorFrontend.Test
         {
             var result = new EmulatedSystem();
             _xmlLibrary.SetupGet(ld => ld.Folder).Returns("SplitSet\\TestLibrary");
+            _xmlLibrary.Object.RomExtension = new[] { "cue" };
             _library.Parse(_xmlLibrary.Object, result);
             var games = result.Games.ToList();
-            games.Should().HaveCount(2);
+            games.Sort((l, r) => l.Description.CompareTo(r.Description));
+            games.Should().HaveCount(3);
             var firstGame = games[0];
-            firstGame.Description.Should().Be("my other pretty rom (EN)");
-            firstGame.LaunchPath.Should().EndWith("my other pretty rom (EN).zip");
-
+            firstGame.Description.Should().Be("my game iso");
+            firstGame.LaunchPath.Should().EndWith("my game iso.cue");
+            
             var secondGame = games[1];
 
-            secondGame.Description.Should().Be("my pretty rom (EN)");
-            secondGame.LaunchPath.Should().EndWith("my pretty rom (EN).zip");
+            secondGame.Description.Should().Be("my other pretty rom (EN)");
+            secondGame.LaunchPath.Should().EndWith("my other pretty rom (EN).zip");
+
+            var thirdGame = games[2];
+
+            thirdGame.Description.Should().Be("my pretty rom (EN)");
+            thirdGame.LaunchPath.Should().EndWith("my pretty rom (EN).zip");
         }
     }
 }

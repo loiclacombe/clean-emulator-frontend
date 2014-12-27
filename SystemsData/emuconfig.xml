@@ -54,6 +54,11 @@
         Name="stella"
         LibraryName="split_2600" />
     </EmulatedSystem>
+    <EmulatedSystem Description="Playstation">
+      <CompatibleEmulator
+        Name="mednafen"
+        LibraryName="split_psx" />
+    </EmulatedSystem>
 
   </SystemGroup>
 
@@ -130,6 +135,13 @@
     Name="split_nintendo64"
     LibraryClass="OtherParsers.SplitSet.Library"
     LibraryFolderKey="split.nintendo64.library" />
+  <Library
+    Name="split_psx"
+    LibraryClass="OtherParsers.SplitSet.Library"
+    LibraryFolderKey="split.psx.library">
+      <RomExtension>cue</RomExtension>
+      <RomExtension>ccd</RomExtension>
+  </Library>
 
   <Library
     Name="split_2600"

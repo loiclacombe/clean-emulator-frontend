@@ -92,13 +92,18 @@
     <None Include="ClrMame\verified_game.dat">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
+    <None Include="SplitSet\TestLibrary\isoFolder\my game iso.cue">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
     <None Include="SplitSet\TestLibrary\my other pretty rom %28EN%29.zip">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
     <None Include="SplitSet\TestLibrary\my pretty rom %28EN%29.zip">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Include="SplitSet\TestLibrary\[BIOS] toto.zip" />
+    <None Include="SplitSet\TestLibrary\[BIOS] toto.zip">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
   </ItemGroup>
   <ItemGroup />
   <ItemGroup>

@@ -13,12 +13,14 @@ using log4net;
 using Parsers;
 using Seterlund.CodeGuard;
 using HiganLibrary = OtherParsers.Higan.Library;
+using MameLibrary = OtherParsers.Mame.Library;
+using SplitSetLibrary = OtherParsers.SplitSet.Library;
 
 namespace CleanEmulatorFrontend
 {
     public class AppLoader
     {
-        private static readonly ILog _logger = LogManager.GetLogger(typeof (AppLoader));
+        private static readonly ILog Logger = LogManager.GetLogger(typeof (AppLoader));
         private readonly CacheManager _cacheManager;
 
         private readonly Func<LoadedSystems> _cacheProvider;
@@ -27,18 +29,18 @@ namespace CleanEmulatorFrontend
         private Dictionary<string, Emulator> _emulators;
         private Dictionary<string, Library> _libraries;
 
-        public AppLoader(Func<LoadedSystems> cacheProvider, CacheManager cacheManager)
+        public AppLoader(Func<LoadedSystems> cacheProvider, CacheManager cacheManager,
+            SplitSetLibrary splitSetLibrary,
+            HiganLibrary higanLibrary, MameLibrary mameLibrary)
         {
             _cacheProvider = cacheProvider;
             _librariesParser = new Dictionary<string, ILibrary>();
             _cacheManager = cacheManager;
-
             _librariesParser.Add(typeof (OtherParsers.SplitSet.Library).FullName,
-                new OtherParsers.SplitSet.Library());
-            _librariesParser.Add(typeof (HiganLibrary).FullName,
-                new HiganLibrary());
+                splitSetLibrary);
+            _librariesParser.Add(typeof (HiganLibrary).FullName, higanLibrary);
             _librariesParser.Add(typeof (OtherParsers.Mame.Library).FullName,
-                new OtherParsers.Mame.Library());
+                mameLibrary);
         }
 
         public LoadedSystems LoadLibrariesFromDats()
@@ -49,16 +51,20 @@ namespace CleanEmulatorFrontend
             FillEmulatorsDict(systemConfigRoot);
             FillLibrariesDict(systemConfigRoot);
 
-            foreach (EmulatedSystem emulatedSystem in systemConfigRoot.SystemGroup
-                .Where(sg => sg.Enabled)
+            var activeGroups = systemConfigRoot.SystemGroup
+                .Where(sg => sg.Enabled);
+            foreach (EmulatedSystem emulatedSystem in activeGroups
                 .SelectMany(systemGroup => systemGroup.EmulatedSystem))
             {
                 ReadSystem(emulatedSystem);
                 FilterInvalidGames(emulatedSystem);
             }
 
+            var systemGroups = activeGroups.ToList();
+            systemGroups.ForEach(sg => Array.Sort(sg.EmulatedSystem, 
+                (l, r)=> l.Description.CompareTo(r.Description)));
 
-            provider.Groups = systemConfigRoot.SystemGroup.Where(sg => sg.Enabled);
+            provider.Groups = systemGroups;
             _cacheManager.Write(provider.Groups.ToList());
 
             return provider;
@@ -88,7 +94,7 @@ namespace CleanEmulatorFrontend
             int invalidGamesCount = emulatedSystem.Games.Count() - validGames.Count();
             if (invalidGamesCount != 0)
             {
-                _logger.WarnFormat("Filtered {0}", invalidGamesCount);
+                Logger.WarnFormat("Filtered {0}", invalidGamesCount);
             }
             emulatedSystem.Games = validGames;
         }
