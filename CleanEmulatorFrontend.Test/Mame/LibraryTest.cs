@@ -3,9 +3,9 @@ using AppConfig;
 using FluentAssertions;
 using GamesData;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using Parsers.Mame;
-using Game = Parsers.Mame.Game;
-using Library = Parsers.Mame.Library;
+using OtherParsers.Mame;
+using Game = OtherParsers.Mame.Game;
+using Library = OtherParsers.Mame.Library;
 
 namespace CleanEmulatorFrontend.Test.Mame
 {

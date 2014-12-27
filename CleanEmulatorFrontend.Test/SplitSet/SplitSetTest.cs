@@ -6,8 +6,8 @@ using System.Collections.Generic;
 using FluentAssertions;
 using GamesData;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using Parsers.SplitSet;
-using Library = Parsers.SplitSet.Library;
+using Moq;
+using Library = OtherParsers.SplitSet.Library;
 
 namespace CleanEmulatorFrontend.Test
 {
@@ -18,10 +18,12 @@ namespace CleanEmulatorFrontend.Test
     public class SplitSetTest
     {
         private Library _library;
+        private Mock<GamesData.Library> _xmlLibrary = new Mock<GamesData.Library>(MockBehavior.Strict);
 
         public SplitSetTest()
         {
             _library = new Library();
+            _xmlLibrary.ResetCalls();
         }
 
         #region Additional test attributes
@@ -50,7 +52,8 @@ namespace CleanEmulatorFrontend.Test
         public void TestParse()
         {
             var result = new EmulatedSystem();
-            _library.Parse("SplitSet\\TestLibrary", result);
+            _xmlLibrary.SetupGet(ld => ld.Folder).Returns("SplitSet\\TestLibrary");
+            _library.Parse(_xmlLibrary.Object, result);
             var games = result.Games.ToList();
             games.Should().HaveCount(2);
             var firstGame = games[0];

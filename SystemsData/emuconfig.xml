@@ -1,12 +1,13 @@
-﻿<?xml version="1.0" encoding="utf-8" ?>
+﻿<?xml version="1.0" encoding="utf-8"?>
+
 <SystemConfigRoot xmlns="http://loiclacombe.com/emuconfig.xsd"
-   xmlns:xsi="http://www.w3.org/2000/10/XMLSchema-instance"
-   xsi:schemaLocation="http://loiclacombe.com/emuconfig.xsd file:emuconfig.xsd">
-  <SystemGroup Description="Consoles" >
+                  xmlns:xsi="http://www.w3.org/2000/10/XMLSchema-instance"
+                  xsi:schemaLocation="http://loiclacombe.com/emuconfig.xsd file:emuconfig.xsd">
+  <SystemGroup Description="Consoles">
     <EmulatedSystem Description="Famicom">
       <CompatibleEmulator
         Name="nestopia"
-        LibraryName="split_famicom"/>
+        LibraryName="split_famicom" />
     </EmulatedSystem>
     <EmulatedSystem Description="Game Boy">
       <CompatibleEmulator
@@ -21,7 +22,7 @@
     <EmulatedSystem Description="Game Boy Avance">
       <CompatibleEmulator
         Name="mednafen"
-        LibraryName="split_gba"/>
+        LibraryName="split_gba" />
     </EmulatedSystem>
     <EmulatedSystem Description="Game Gear">
       <CompatibleEmulator
@@ -41,12 +42,17 @@
     <EmulatedSystem Description="Nintendo 64">
       <CompatibleEmulator
         Name="project64"
-        LibraryName="split_nintendo64"/>
+        LibraryName="split_nintendo64" />
     </EmulatedSystem>
     <EmulatedSystem Description="Super Famicom">
       <CompatibleEmulator
         Name="higan"
-        LibraryName="higan_superfamicom"/>
+        LibraryName="higan_superfamicom" />
+    </EmulatedSystem>
+    <EmulatedSystem Description="Atari 2600">
+      <CompatibleEmulator
+        Name="stella"
+        LibraryName="split_2600" />
     </EmulatedSystem>
 
   </SystemGroup>
@@ -56,7 +62,7 @@
       <CompatibleEmulator
         Name="mame"
         LibraryName="mame"
-        Enabled="false"/>
+        Enabled="false" />
     </EmulatedSystem>
   </SystemGroup>
   <Emulator Name="higan" Description="Higan">
@@ -87,46 +93,58 @@
     <EmulatorPathKey>emulators.mame.path</EmulatorPathKey>
     <CliParameters>"{0}"</CliParameters>
   </Emulator>
+  <Emulator Name="stella" Description="Stella">
+    <EmulatorPathKey>emulators.stella.path</EmulatorPathKey>
+    <CliParameters>"{0}"</CliParameters>
+  </Emulator>
 
   <Library
     Name="split_famicom"
-    LibraryClass="Parsers.SplitSet.Library"
-    LibraryFolderKey="split.famicom.library"/>
+    LibraryClass="OtherParsers.SplitSet.Library"
+    LibraryFolderKey="split.famicom.library" />
   <Library
     Name="split_gb"
-    LibraryClass="Parsers.SplitSet.Library"
-    LibraryFolderKey="split.gb.library"/>
+    LibraryClass="OtherParsers.SplitSet.Library"
+    LibraryFolderKey="split.gb.library" />
   <Library
     Name="split_gbc"
-    LibraryClass="Parsers.SplitSet.Library"
-    LibraryFolderKey="split.gbc.library"/>
+    LibraryClass="OtherParsers.SplitSet.Library"
+    LibraryFolderKey="split.gbc.library" />
   <Library
-  Name="split_gba"
-  LibraryClass="Parsers.SplitSet.Library"
-  LibraryFolderKey="split.gba.library"/>
+    Name="split_gba"
+    LibraryClass="OtherParsers.SplitSet.Library"
+    LibraryFolderKey="split.gba.library" />
   <Library
     Name="split_gamegear"
-    LibraryClass="Parsers.SplitSet.Library"
-    LibraryFolderKey="split.gamegear.library"/>
+    LibraryClass="OtherParsers.SplitSet.Library"
+    LibraryFolderKey="split.gamegear.library" />
   <Library
-  Name="split_mastersystem"
-  LibraryClass="Parsers.SplitSet.Library"
-  LibraryFolderKey="split.mastersystem.library"/>
+    Name="split_mastersystem"
+    LibraryClass="OtherParsers.SplitSet.Library"
+    LibraryFolderKey="split.mastersystem.library" />
   <Library
-  Name="split_megadrive"
-  LibraryClass="Parsers.SplitSet.Library"
-  LibraryFolderKey="split.megadrive.library"/>
+    Name="split_megadrive"
+    LibraryClass="OtherParsers.SplitSet.Library"
+    LibraryFolderKey="split.megadrive.library" />
   <Library
-Name="split_nintendo64"
-LibraryClass="Parsers.SplitSet.Library"
-LibraryFolderKey="split.nintendo64.library"/>
+    Name="split_nintendo64"
+    LibraryClass="OtherParsers.SplitSet.Library"
+    LibraryFolderKey="split.nintendo64.library" />
+
   <Library
-Name="higan_superfamicom"
-LibraryClass="Parsers.Higan.Library"
-LibraryFolderKey="higan.superfamicom.library"/>
+    Name="split_2600"
+    LibraryClass="OtherParsers.SplitSet.Library"
+    LibraryFolderKey="split.2600.library">
+    <RomExtension>zip</RomExtension>
+    <RomExtension>bin</RomExtension>
+  </Library>
+  <Library
+    Name="higan_superfamicom"
+    LibraryClass="OtherParsers.Higan.Library"
+    LibraryFolderKey="higan.superfamicom.library" />
   <Library
     Name="mame"
-    LibraryClass="Parsers.Mame.Library"
-    LibraryFolderKey="mame.all.library"/>
+    LibraryClass="OtherParsers.Mame.Library"
+    LibraryFolderKey="mame.all.library" />
 
 </SystemConfigRoot>

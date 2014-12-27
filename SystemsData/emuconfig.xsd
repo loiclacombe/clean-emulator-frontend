@@ -19,6 +19,9 @@
     <xs:attribute name="Enabled" type="xs:boolean" default="true" />
   </xs:complexType>
   <xs:complexType name="Library">
+    <xs:sequence>
+      <xs:element name="RomExtension" type="xs:string" minOccurs="0" maxOccurs="unbounded"/>
+    </xs:sequence>
     <xs:attribute name="Name" type="xs:string" />
     <xs:attribute name="LibraryClass" type="xs:string" />
     <xs:attribute name="LibraryFolderKey" type="xs:string" />

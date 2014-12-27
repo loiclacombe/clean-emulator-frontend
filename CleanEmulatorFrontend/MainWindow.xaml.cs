@@ -8,9 +8,10 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
 using GamesData;
+using Launchers;
 using log4net;
 using ReactiveUI;
-
+// ReSharper disable PossibleMultipleEnumeration
 namespace CleanEmulatorFrontend
 {
     /// <summary>
@@ -22,26 +23,32 @@ namespace CleanEmulatorFrontend
 
         private readonly AppLoader _appLoader;
         private readonly ReactiveList<Game> _displayed = new ReactiveList<Game>();
+        private readonly Random _random = new Random();
 
         private IEnumerable<Game> _all = new List<Game>();
-        private SystemsCache _systemsCache;
+        private LoadedSystems _loadedSystems;
 
-        public MainWindow(AppLoader appLoader)
+        public MainWindow(AppLoader appLoader, Random random)
         {
             _appLoader = appLoader;
+            _random = random;
 
             InitializeComponent();
         }
 
         public void InitializeContent()
         {
-            _systemsCache = _appLoader.LoadLibraries();
-            SystemsTree.ItemsSource = _systemsCache.Groups;
-            GamesGrid.ItemsSource = _displayed;
+            LoadFromCache();
             SelectDefaultSystem();
             InitEvents();
 
             WindowState = WindowState.Maximized;
+        }
+
+        private void InitTrees()
+        {
+            SystemsTree.ItemsSource = _loadedSystems.Groups;
+            GamesGrid.ItemsSource = _displayed;
         }
 
         private void InitEvents()
@@ -58,30 +65,53 @@ namespace CleanEmulatorFrontend
                                SearchGameBlock.Focus();
                            });
 
-            SearchGameBlock
-                .Events()
+            SearchGameBlock.Events()
                 .KeyUp
                 .Where(k => k.Key == Key.Enter)
-                .Subscribe(e => FilterGames(SearchGameBlock.Text));
+                .Select(k => SearchGameBlock.Text)
+                .Subscribe(FilterGames);
+            LoadFromDats();
+
+            RefreshCacheButton.Events()
+                .PreviewMouseDown
+                .Subscribe(e => LoadFromDats());
         }
+
+        private void LoadFromCache()
+        {
+            _loadedSystems = _appLoader.LoadLibrariesFromCache();
+            InitTrees();
+        }
+
+        private void LoadFromDats()
+        {
+            _loadedSystems = _appLoader.LoadLibrariesFromDats();
+            InitTrees();
+        }
+
 
         private void GameLaunchEvents()
         {
-            var doubleClickedOnGame = GamesGrid.Events()
+            IObservable<Game> doubleClickedOnGame = GamesGrid.Events()
                 .MouseDoubleClick
                 .Select(e => e.MouseDevice.DirectlyOver)
                 .Where(e => e is FrameworkElement
-                            && ((FrameworkElement)e).Parent is DataGridCell)
-                .Where(e => OnlyOneGameIsSelected())
+                            && ((FrameworkElement) e).Parent is DataGridCell)
+                .Where(OnlyOneGameIsSelected)
                 .Select(SelectedGame);
-            var pressedEnterToLaunchGame = GamesGrid.Events()
+            IObservable<Game> pressedEnterToLaunchGame = GamesGrid.Events()
                 .KeyUp
                 .Where(k => k.Key == Key.Enter)
-                .Where(e => OnlyOneGameIsSelected())
+                .Where(OnlyOneGameIsSelected)
                 .Select(SelectedGame);
+
+            IObservable<Game> clickedRandomGameLaunch = RandomGameButton.Events()
+                .PreviewMouseLeftButtonDown
+                .Select(PickRandomGame);
 
             pressedEnterToLaunchGame
                 .Merge(doubleClickedOnGame)
+                .Merge(clickedRandomGameLaunch)
                 .Subscribe(LaunchSelectedGame);
 
             //prevent movement to next line on press enter
@@ -91,54 +121,66 @@ namespace CleanEmulatorFrontend
                 .Subscribe(e => e.Handled = true);
         }
 
-        private Game SelectedGame(Object anything)
+        private Game PickRandomGame(MouseButtonEventArgs arg)
+        {
+            int randomGameIndex = _random.Next(_displayed.Count);
+            return _displayed[randomGameIndex];
+        }
+
+        internal Game SelectedGame(Object anything)
         {
             return GamesGrid.SelectedItem as Game;
         }
 
-        private void FilterGames(string text)
+        internal void FilterGames(string text)
         {
             string[] words = text.ToLower().Split(' ');
             _displayed.Clear();
             _displayed.AddRange(_all.Where(g => AllWordsAreContainedIn(g, words)));
         }
 
-        private void SystemSelectionEvents()
+        internal void SystemSelectionEvents()
         {
-            IObservable<object> systemChanged = SystemsTree
+            IObservable<object> selectedSystemChanged = SystemsTree
                 .Events()
                 .SelectedItemChanged
                 .Select(s => s.NewValue);
 
-            systemChanged
+            var selectedGamesForSystem = selectedSystemChanged
                 .Where(v => v.GetType() == typeof (EmulatedSystem))
                 .Select(v => v as EmulatedSystem)
-                .Subscribe(es =>
-                           {
-                               _displayed.Clear();
-                               _all = _systemsCache.FilterBySystem(es);
-                               _displayed.AddRange(_all);
-                           });
+                .Select(_loadedSystems.FilterBySystem);
 
-            systemChanged
+            var selectedGamesForGroup = selectedSystemChanged
                 .Where(v => v.GetType() == typeof (SystemGroup))
                 .Select(v => v as SystemGroup)
-                .Subscribe(sg =>
-                           {
-                               _displayed.Clear();
-                               _all = _systemsCache.FilterBySystemGroup(sg);
-                               _displayed.AddRange(_all);
-                           });
+                .Select(_loadedSystems.FilterBySystemGroup);
+
+            selectedGamesForGroup
+                .Merge(selectedGamesForSystem)
+                .Subscribe(UpdateGamesGrid);
         }
 
-        private void SelectDefaultSystem()
+        private void UpdateGamesGrid(IEnumerable<Game> games)
+        {
+            _displayed.Clear();
+
+
+            _all = games;
+            if (games.Any())
+            {
+                _displayed.AddRange(_all);
+            }
+        }
+
+        internal void SelectDefaultSystem()
         {
             SystemsTree.SetSelectedItem("Consoles",
-                o => o.GetType() == typeof (SystemGroup) ? ((SystemGroup) o).Description : "toto");
+                o => o.GetType() == typeof (SystemGroup) ? ((SystemGroup) o).Description : "zzzzzzzz");
         }
 
 
-        private void LaunchSelectedGame(Game game)
+        internal void LaunchSelectedGame(Game game)
         {
             if (game == null) return;
             game.Start()
@@ -149,7 +191,7 @@ namespace CleanEmulatorFrontend
                         ErrorDialog.DisplayError(process.StartInfo + "\n" + process.ErrorMessage));
         }
 
-        private bool OnlyOneGameIsSelected()
+        internal bool OnlyOneGameIsSelected(Object o)
         {
             return GamesGrid.SelectedItems.Count == 1;
         }
@@ -198,35 +240,6 @@ namespace CleanEmulatorFrontend
                 ev => process.Exited -= ev)
                 .Select(ev => ev.Sender as Process)
                 .Select(p => new ExitedProcess(p));
-        }
-    }
-
-    public class ExitedProcess
-    {
-        private readonly string _errorMessage;
-        private readonly int _exitCode;
-        private readonly ProcessStartInfo _startInfo;
-
-        public ExitedProcess(Process process)
-        {
-            _exitCode = process.ExitCode;
-            _errorMessage = process.StandardError.ReadToEnd();
-            _startInfo = process.StartInfo;
-        }
-
-        public ProcessStartInfo StartInfo
-        {
-            get { return _startInfo; }
-        }
-
-        public int ExitCode
-        {
-            get { return _exitCode; }
-        }
-
-        public string ErrorMessage
-        {
-            get { return _errorMessage; }
         }
     }
 }

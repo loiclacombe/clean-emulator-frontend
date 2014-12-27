@@ -4,43 +4,46 @@ using System.Configuration;
 using System.IO;
 using System.Linq;
 using System.Reflection;
+using System.Threading.Tasks;
 using System.Xml.Serialization;
-using Castle.Core.Internal;
+using Cache;
 using GamesData;
 using Launchers;
 using log4net;
 using Parsers;
 using Seterlund.CodeGuard;
-using HiganLibrary = Parsers.Higan.Library;
+using HiganLibrary = OtherParsers.Higan.Library;
 
 namespace CleanEmulatorFrontend
 {
     public class AppLoader
     {
         private static readonly ILog _logger = LogManager.GetLogger(typeof (AppLoader));
+        private readonly CacheManager _cacheManager;
 
-        private readonly Func<SystemsCache> _cacheProvider;
+        private readonly Func<LoadedSystems> _cacheProvider;
         private readonly Dictionary<string, ILibrary> _librariesParser;
 
         private Dictionary<string, Emulator> _emulators;
         private Dictionary<string, Library> _libraries;
 
-        public AppLoader(Func<SystemsCache> cacheProvider)
+        public AppLoader(Func<LoadedSystems> cacheProvider, CacheManager cacheManager)
         {
             _cacheProvider = cacheProvider;
             _librariesParser = new Dictionary<string, ILibrary>();
+            _cacheManager = cacheManager;
 
-
-            _librariesParser.Add(typeof (Parsers.SplitSet.Library).FullName,
-                new Parsers.SplitSet.Library());
+            _librariesParser.Add(typeof (OtherParsers.SplitSet.Library).FullName,
+                new OtherParsers.SplitSet.Library());
             _librariesParser.Add(typeof (HiganLibrary).FullName,
                 new HiganLibrary());
-            _librariesParser.Add(typeof (Parsers.Mame.Library).FullName,
-                new Parsers.Mame.Library());
+            _librariesParser.Add(typeof (OtherParsers.Mame.Library).FullName,
+                new OtherParsers.Mame.Library());
         }
 
-        public SystemsCache LoadLibraries()
+        public LoadedSystems LoadLibrariesFromDats()
         {
+            LoadedSystems provider = _cacheProvider();
             SystemConfigRoot systemConfigRoot = ReadEmuConfig();
 
             FillEmulatorsDict(systemConfigRoot);
@@ -54,26 +57,45 @@ namespace CleanEmulatorFrontend
                 FilterInvalidGames(emulatedSystem);
             }
 
-            SystemsCache cacheProvider = _cacheProvider();
-            cacheProvider.Groups = systemConfigRoot.SystemGroup.Where(sg => sg.Enabled);
-            return cacheProvider;
+
+            provider.Groups = systemConfigRoot.SystemGroup.Where(sg => sg.Enabled);
+            _cacheManager.Write(provider.Groups.ToList());
+
+            return provider;
+        }
+
+        public LoadedSystems LoadLibrariesFromCache()
+        {
+            LoadedSystems provider = _cacheProvider();
+            List<SystemGroup> systemGroups = _cacheManager.Load();
+
+            if (systemGroups.Any())
+            {
+                provider.Groups = systemGroups;
+            }
+            else
+            {
+                provider = LoadLibrariesFromDats();
+            }
+
+            return provider;
         }
 
         private void FilterInvalidGames(EmulatedSystem emulatedSystem)
         {
-            var filteredList = emulatedSystem.Games.Where(
-                IsInvalid).ToList();
-            int invalidGamesCount = emulatedSystem.Games.Count() - filteredList.Count();
+            List<Game> validGames = emulatedSystem.Games.Where(
+                IsValid).ToList();
+            int invalidGamesCount = emulatedSystem.Games.Count() - validGames.Count();
             if (invalidGamesCount != 0)
             {
                 _logger.WarnFormat("Filtered {0}", invalidGamesCount);
             }
-            emulatedSystem.Games = filteredList;
+            emulatedSystem.Games = validGames;
         }
 
-        private static bool IsInvalid(Game g)
+        private static bool IsValid(Game g)
         {
-            return g.Description != null && g.LaunchPath != null && g.System != null;
+            return g != null && g.Description != null && g.LaunchPath != null && g.System != null;
         }
 
         private void FillLibrariesDict(SystemConfigRoot systemConfigRoot)
@@ -97,12 +119,11 @@ namespace CleanEmulatorFrontend
             Library libraryData = _libraries[emulatedSystem.CompatibleEmulator.LibraryName];
             Guard.That(libraryData).IsNotNull();
 
-            string libraryFolder = ConfigurationManager.AppSettings[libraryData.LibraryFolderKey];
             ILibrary library = _librariesParser[libraryData.LibraryClass];
 
             if (library != null)
             {
-                library.Parse(libraryFolder, emulatedSystem);
+                library.Parse(libraryData, emulatedSystem);
             }
         }
 
@@ -116,9 +137,5 @@ namespace CleanEmulatorFrontend
                 return systemConfigRoot;
             }
         }
-
-
     }
-
 }
-

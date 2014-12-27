@@ -225,11 +225,24 @@ namespace GamesData {
     [System.Xml.Serialization.XmlTypeAttribute(Namespace="http://loiclacombe.com/emuconfig.xsd")]
     public partial class Library {
         
+        private string[] romExtensionField;
+        
         private string nameField;
         
         private string libraryClassField;
         
         private string libraryFolderKeyField;
+        
+        /// <remarks/>
+        [System.Xml.Serialization.XmlElementAttribute("RomExtension")]
+        public string[] RomExtension {
+            get {
+                return this.romExtensionField;
+            }
+            set {
+                this.romExtensionField = value;
+            }
+        }
         
         /// <remarks/>
         [System.Xml.Serialization.XmlAttributeAttribute()]

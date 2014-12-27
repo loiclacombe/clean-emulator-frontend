@@ -14,6 +14,7 @@
     <ProjectTypeGuids>{60dc8134-eba5-43b8-bcc9-bb4bc16c2548};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
     <WarningLevel>4</WarningLevel>
     <TargetFrameworkProfile />
+    <IsWebBootstrapper>false</IsWebBootstrapper>
     <PublishUrl>publish\</PublishUrl>
     <Install>true</Install>
     <InstallFrom>Disk</InstallFrom>
@@ -24,10 +25,10 @@
     <UpdatePeriodically>false</UpdatePeriodically>
     <UpdateRequired>false</UpdateRequired>
     <MapFileExtensions>true</MapFileExtensions>
-    <ApplicationRevision>0</ApplicationRevision>
+    <ApplicationRevision>2</ApplicationRevision>
     <ApplicationVersion>1.0.0.%2a</ApplicationVersion>
-    <IsWebBootstrapper>false</IsWebBootstrapper>
     <UseApplicationTrust>false</UseApplicationTrust>
+    <PublishWizardCompleted>true</PublishWizardCompleted>
     <BootstrapperEnabled>true</BootstrapperEnabled>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
@@ -52,6 +53,18 @@
   </PropertyGroup>
   <PropertyGroup>
     <StartupObject>CleanEmulatorFrontend.App</StartupObject>
+  </PropertyGroup>
+  <PropertyGroup>
+    <ManifestCertificateThumbprint>7295DDE09DEA9FE6CCB42A3F8BC4CC6678BDD6E0</ManifestCertificateThumbprint>
+  </PropertyGroup>
+  <PropertyGroup>
+    <ManifestKeyFile>CleanEmulatorFrontend_TemporaryKey.pfx</ManifestKeyFile>
+  </PropertyGroup>
+  <PropertyGroup>
+    <GenerateManifests>true</GenerateManifests>
+  </PropertyGroup>
+  <PropertyGroup>
+    <SignManifests>true</SignManifests>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="Castle.Core">
@@ -94,9 +107,6 @@
     </Reference>
     <Reference Include="ReactiveUI.Events">
       <HintPath>..\packages\reactiveui-events.6.2.1.1\lib\net45\ReactiveUI.Events.dll</HintPath>
-    </Reference>
-    <Reference Include="ReactiveUI.Testing">
-      <HintPath>..\packages\reactiveui-testing.6.2.1.1\lib\net45\ReactiveUI.Testing.dll</HintPath>
     </Reference>
     <Reference Include="Seterlund.CodeGuard">
       <HintPath>..\packages\Seterlund.CodeGuard.2.3.4\lib\net40\Seterlund.CodeGuard.dll</HintPath>
@@ -148,12 +158,11 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
-    <Compile Include="Lucent\LucentFilterProvider.cs" />
     <Compile Include="Properties\Annotations.cs" />
-    <Compile Include="SystemsCache.cs" />
+    <Compile Include="LoadedSystems.cs" />
     <Compile Include="TreeViewExtensions.cs" />
     <Compile Include="UIUtility.cs" />
-    <Page Include="ErrorDialog.xaml">
+    <Page Include="Dialogs\ErrorDialog.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -166,7 +175,7 @@
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="AppLoader.cs" />
-    <Compile Include="ErrorDialog.xaml.cs">
+    <Compile Include="Dialogs\ErrorDialog.xaml.cs">
       <DependentUpon>ErrorDialog.xaml</DependentUpon>
     </Compile>
     <Compile Include="MainWindow.xaml.cs">
@@ -192,10 +201,13 @@
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
     </EmbeddedResource>
+    <None Include="CleanEmulatorFrontend_TemporaryKey.pfx" />
     <None Include="log4net.config">
       <SubType>Designer</SubType>
     </None>
-    <None Include="packages.config" />
+    <None Include="packages.config">
+      <SubType>Designer</SubType>
+    </None>
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>
@@ -215,13 +227,21 @@
       <Project>{406150EC-C2B6-4931-89D4-96775C662493}</Project>
       <Name>AppConfig</Name>
     </ProjectReference>
+    <ProjectReference Include="..\Cache\Cache.csproj">
+      <Project>{57BC7614-CA58-4018-B452-4F696138302D}</Project>
+      <Name>Cache</Name>
+    </ProjectReference>
     <ProjectReference Include="..\Launchers\Launchers.csproj">
       <Project>{3942ECD5-99B4-4961-997E-5553B2ED7A1D}</Project>
       <Name>Launchers</Name>
     </ProjectReference>
-    <ProjectReference Include="..\Parsers\Parsers.csproj">
+    <ProjectReference Include="..\OtherParsers\OtherParsers.csproj">
       <Project>{dda06a98-958f-40b2-b28a-19868074dd5d}</Project>
-      <Name>Parsers</Name>
+      <Name>OtherParsers</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\ParsersBase\ParsersBase.csproj">
+      <Project>{359FAC85-4BE6-4FFA-A5B3-EDE9F64EB1A3}</Project>
+      <Name>ParsersBase</Name>
     </ProjectReference>
     <ProjectReference Include="..\SystemsData\SystemsData.csproj">
       <Project>{F1E8E9A7-7B34-4095-9DBC-AE0263D6B59C}</Project>
@@ -229,9 +249,9 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
-    <BootstrapperPackage Include=".NETFramework,Version=v4.5.1">
+    <BootstrapperPackage Include=".NETFramework,Version=v4.5.2">
       <Visible>False</Visible>
-      <ProductName>Microsoft .NET Framework 4.5.1 %28x86 and x64%29</ProductName>
+      <ProductName>Microsoft .NET Framework 4.5.2 %28x86 and x64%29</ProductName>
       <Install>true</Install>
     </BootstrapperPackage>
     <BootstrapperPackage Include="Microsoft.Net.Client.3.5">

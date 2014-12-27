@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Runtime.ExceptionServices;
+using System.Xml.Serialization;
 using GamesData.DatData;
 
 namespace GamesData

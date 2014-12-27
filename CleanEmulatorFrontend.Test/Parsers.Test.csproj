@@ -48,6 +48,9 @@
     <Reference Include="Irony.Interpreter">
       <HintPath>..\packages\Irony.Interpreter.0.9.0\lib\net45\Irony.Interpreter.dll</HintPath>
     </Reference>
+    <Reference Include="Moq">
+      <HintPath>..\packages\Moq.4.2.1409.1722\lib\net40\Moq.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Configuration" />
     <Reference Include="System.Xml" />
@@ -108,9 +111,17 @@
       <Project>{406150EC-C2B6-4931-89D4-96775C662493}</Project>
       <Name>AppConfig</Name>
     </ProjectReference>
-    <ProjectReference Include="..\Parsers\Parsers.csproj">
+    <ProjectReference Include="..\ClrMameParser\ClrMameParser.csproj">
+      <Project>{31316074-9833-4104-9eb3-876bf5fe8c7c}</Project>
+      <Name>ClrMameParser</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\OtherParsers\OtherParsers.csproj">
       <Project>{dda06a98-958f-40b2-b28a-19868074dd5d}</Project>
-      <Name>Parsers</Name>
+      <Name>OtherParsers</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\ParsersBase\ParsersBase.csproj">
+      <Project>{359fac85-4be6-4ffa-a5b3-ede9f64eb1a3}</Project>
+      <Name>ParsersBase</Name>
     </ProjectReference>
     <ProjectReference Include="..\SystemsData\SystemsData.csproj">
       <Project>{F1E8E9A7-7B34-4095-9DBC-AE0263D6B59C}</Project>
