@@ -9,21 +9,21 @@ using Newtonsoft.Json.Converters;
 
 namespace Cache
 {
-    public class CacheManager
+    public class CacheLoader
     {
         private const string CachePath = @"%APPDATA%\CleanEmulatorFrontend\cache.json";
-        private static readonly ILog Logger = LogManager.GetLogger(typeof (CacheManager));
+        private static readonly ILog Logger = LogManager.GetLogger(typeof (CacheLoader));
 
         private static string ExpandCachePath
         {
             get { return Environment.ExpandEnvironmentVariables(CachePath); }
         }
 
-        public void Write(IEnumerable<SystemGroup> systemGroups)
+        public void Write(IEnumerable<SystemNode> systemGroups)
         {
             JsonSerializer serializer = JsonSerializer();
 
-            var cacheContainer = new CacheContainer {SystemGroups = systemGroups.ToList()};
+            var cacheContainer = new PersistenceContainer {SystemGroups = systemGroups.ToList()};
             using (var sw = new StreamWriter(ExpandCachePath))
             using (var writer = new JsonTextWriter(sw))
             {
@@ -44,7 +44,7 @@ namespace Cache
         }
 
 
-        public List<SystemGroup> Load()
+        public List<SystemNode> Load()
         {
             try
             {
@@ -52,13 +52,14 @@ namespace Cache
                 using (var sw = new StreamReader(ExpandCachePath))
                 using (var reader = new JsonTextReader(sw))
                 {
-                    return serializer.Deserialize<CacheContainer>(reader).SystemGroups;
+                    var cacheContainer = serializer.Deserialize<PersistenceContainer>(reader);
+                    return cacheContainer.IsCacheValid() ? cacheContainer.SystemGroups : new List<SystemNode>();
                 }
             }
             catch (Exception e)
             {
                 Logger.Debug(e, e);
-                return new List<SystemGroup>();
+                return new List<SystemNode>();
             }
         }
     }

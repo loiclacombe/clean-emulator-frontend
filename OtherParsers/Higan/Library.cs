@@ -14,8 +14,8 @@ namespace OtherParsers.Higan
 
         public void Parse(GamesData.Library library, EmulatedSystem emulatedSystem)
         {
-            Guard.That(library.Folder).IsNotNull();
-            var directoryInfo = new DirectoryInfo(library.Folder);
+            Guard.That(library.Path).IsNotNull();
+            var directoryInfo = new DirectoryInfo(library.Path);
             DirectoryInfo[] folders = directoryInfo.GetDirectories("*.*", SearchOption.AllDirectories);
 
 
@@ -24,6 +24,7 @@ namespace OtherParsers.Higan
             {
                 Description = (Path.GetFileNameWithoutExtension(rom.FullName)),
                 LaunchPath = rom.FullName,
+                BasePath = library.Path,
                 System = emulatedSystem
             }).ToList();
             games.ForEach(emulatedSystem.Games.Add);

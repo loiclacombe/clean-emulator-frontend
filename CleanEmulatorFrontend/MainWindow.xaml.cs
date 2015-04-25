@@ -7,6 +7,7 @@ using System.Reflection;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
+using CleanEmulatorFrontend.Dialogs;
 using GamesData;
 using Launchers;
 using log4net;
@@ -21,25 +22,31 @@ namespace CleanEmulatorFrontend
     {
         private static readonly ILog Logger = LogManager.GetLogger(typeof (MainWindow));
 
-        private readonly AppLoader _appLoader;
         private readonly Random _random;
+        private readonly Func<ConfigureEmulators> _configureEmulators;
+        private readonly FailsafeCacheLoader _failsafeCacheLoader;
 
         private IEnumerable<Game> _all = new List<Game>();
         private LoadedSystems _loadedSystems;
         private readonly ReactiveList<Game> _displayed = new ReactiveList<Game>();
 
-        public MainWindow(AppLoader appLoader, Random random)
+
+        public MainWindow(FailsafeCacheLoader failsafeCacheLoader, Random random,
+            Func<ConfigureEmulators> configureEmulators)
         {
-            _appLoader = appLoader;
+            _failsafeCacheLoader = failsafeCacheLoader;
             _random = random;
+            _configureEmulators = configureEmulators;
+            _failsafeCacheLoader = failsafeCacheLoader;
 
             InitializeComponent();
         }
 
         public void InitializeContent()
         {
-            LoadFromCache();
+            _failsafeCacheLoader.LoadLibraries();
             SelectDefaultSystem();
+            InitTrees();
             InitEvents();
 
             WindowState = WindowState.Maximized;
@@ -47,6 +54,7 @@ namespace CleanEmulatorFrontend
 
         private void InitTrees()
         {
+            _loadedSystems = _failsafeCacheLoader.LoadLibraries();
             SystemsTree.ItemsSource = _loadedSystems.Groups;
             GamesGrid.ItemsSource = _displayed;
         }
@@ -70,24 +78,21 @@ namespace CleanEmulatorFrontend
                 .Where(k => k.Key == Key.Enter)
                 .Select(k => SearchGameBlock.Text)
                 .Subscribe(FilterGames);
-            LoadFromDats();
 
             RefreshCacheButton.Events()
                 .PreviewMouseDown
-                .Subscribe(e => LoadFromDats());
+                .Subscribe(e => _failsafeCacheLoader.ForceLoadFromDats());
+
+            ConfigureButton.Events()
+                .PreviewMouseDown
+                .Subscribe(e =>
+                           {
+                               var configureEmulators = _configureEmulators();
+                               configureEmulators.ShowDialog();
+                           });
+
         }
 
-        private void LoadFromCache()
-        {
-            _loadedSystems = _appLoader.LoadLibrariesFromCache();
-            InitTrees();
-        }
-
-        private void LoadFromDats()
-        {
-            _loadedSystems = _appLoader.LoadLibrariesFromDats();
-            InitTrees();
-        }
 
 
         private void GameLaunchEvents()
@@ -136,7 +141,9 @@ namespace CleanEmulatorFrontend
         {
             string[] words = text.ToLower().Split(' ');
             _displayed.Clear();
-            _displayed.AddRange(_all.Where(g => AllWordsAreContainedIn(g, words)));
+            var filtered = _all.Where(g => AllWordsAreContainedIn(g, words)).ToList();
+            if (filtered.Any())
+                filtered.ForEach(_displayed.Add);
         }
 
         internal void SystemSelectionEvents()
@@ -147,14 +154,12 @@ namespace CleanEmulatorFrontend
                 .Select(s => s.NewValue);
 
             var selectedGamesForSystem = selectedSystemChanged
-                .Where(v => v.GetType() == typeof (EmulatedSystem))
-                .Select(v => v as EmulatedSystem)
-                .Select(_loadedSystems.FilterBySystem);
+                .OfType<EmulatedSystem>()
+                .Select(_loadedSystems.FilterBy);
 
             var selectedGamesForGroup = selectedSystemChanged
-                .Where(v => v.GetType() == typeof (SystemGroup))
-                .Select(v => v as SystemGroup)
-                .Select(_loadedSystems.FilterBySystemGroup);
+                .OfType<SystemNode>()
+                .Select(_loadedSystems.FilterBy);
 
             selectedGamesForGroup
                 .Merge(selectedGamesForSystem)
@@ -164,7 +169,6 @@ namespace CleanEmulatorFrontend
         private void UpdateGamesGrid(IEnumerable<Game> games)
         {
             _displayed.Clear();
-
 
             _all = games;
             if (games.Any())

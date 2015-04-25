@@ -53,7 +53,7 @@ namespace CleanEmulatorFrontend.Test
         public void TestParse()
         {
             var result = new EmulatedSystem();
-            _xmlLibrary.SetupGet(ld => ld.Folder).Returns("SplitSet\\TestLibrary");
+            _xmlLibrary.SetupGet(ld => ld.Path).Returns("SplitSet\\TestLibrary");
             _xmlLibrary.Object.RomExtension = new[] { "cue" };
             _library.Parse(_xmlLibrary.Object, result);
             var games = result.Games.ToList();

@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using GamesData;
-using GamesData.DatData;
 using Irony.Parsing;
 using log4net;
 

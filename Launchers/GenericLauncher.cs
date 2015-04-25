@@ -1,7 +1,9 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Configuration;
 using System.Diagnostics;
 using System.IO;
+using System.Linq;
 using GamesData;
 using log4net;
 
@@ -27,7 +29,7 @@ namespace Launchers
                               StartInfo =
                               {
                                   FileName = emuPath,
-                                  Arguments = Arguments(game),
+                                  Arguments = FormatArguments(game),
                                   UseShellExecute = false,
                                   RedirectStandardOutput = true,
                                   RedirectStandardError = true,
@@ -38,9 +40,15 @@ namespace Launchers
             return process;
         }
 
-        private string Arguments(Game game)
+        private string FormatArguments(Game game)
         {
-            return string.Format(_emulator.CliParameters, game.LaunchPath);
+            List<string> parameters = new List<string> {game.AbsoluteLaunchPath};
+            if (_emulator.ParametersFromKeys != null)
+            {
+                parameters.AddRange(_emulator.ParametersFromKeys.Select(p => ConfigurationManager.AppSettings[p]));
+            }
+
+            return string.Format(_emulator.CliParameters, parameters.ToArray());
         }
     }
 

@@ -64,11 +64,14 @@
     <GenerateManifests>true</GenerateManifests>
   </PropertyGroup>
   <PropertyGroup>
-    <SignManifests>true</SignManifests>
+    <SignManifests>false</SignManifests>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="Castle.Core">
       <HintPath>..\packages\Castle.Core.3.2.0\lib\net45\Castle.Core.dll</HintPath>
+    </Reference>
+    <Reference Include="INIFileParser">
+      <HintPath>..\packages\ini-parser.2.1.1\lib\INIFileParser.dll</HintPath>
     </Reference>
     <Reference Include="Irony, Version=1.0.0.0, Culture=neutral, PublicKeyToken=ca48ace7223ead47, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
@@ -158,10 +161,20 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="DatsLoader.cs" />
+    <Compile Include="Dialogs\ConfigureEmulators.xaml.cs">
+      <DependentUpon>ConfigureEmulators.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="EnumerableTools.cs" />
+    <Compile Include="FailsafeCacheLoader.cs" />
     <Compile Include="Properties\Annotations.cs" />
     <Compile Include="LoadedSystems.cs" />
     <Compile Include="TreeViewExtensions.cs" />
     <Compile Include="UIUtility.cs" />
+    <Page Include="Dialogs\ConfigureEmulators.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="Dialogs\ErrorDialog.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -174,7 +187,6 @@
       <DependentUpon>App.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="AppLoader.cs" />
     <Compile Include="Dialogs\ErrorDialog.xaml.cs">
       <DependentUpon>ErrorDialog.xaml</DependentUpon>
     </Compile>
@@ -201,7 +213,7 @@
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
     </EmbeddedResource>
-    <None Include="CleanEmulatorFrontend_TemporaryKey.pfx" />
+    <None Include="LICENSE" />
     <None Include="log4net.config">
       <SubType>Designer</SubType>
     </None>

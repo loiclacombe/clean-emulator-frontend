@@ -15,8 +15,8 @@ namespace OtherParsers.Mame
         {
             using (StreamReader stream = ReadMameDat().StandardOutput)
             {
-                var serializer = new XmlSerializer(typeof(OtherParsers.Mame.Mame));
-                var mameData = serializer.Deserialize(stream) as OtherParsers.Mame.Mame;
+                var serializer = new XmlSerializer(typeof(OtherParsers.Mame.MameXml));
+                var mameData = serializer.Deserialize(stream) as OtherParsers.Mame.MameXml;
                 Guard.That(mameData).IsNotNull();
                 mameData.Game
                     .Select(g => g.AsGameDataOn(emulatedSystem))

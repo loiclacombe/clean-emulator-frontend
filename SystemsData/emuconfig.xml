@@ -3,152 +3,186 @@
 <SystemConfigRoot xmlns="http://loiclacombe.com/emuconfig.xsd"
                   xmlns:xsi="http://www.w3.org/2000/10/XMLSchema-instance"
                   xsi:schemaLocation="http://loiclacombe.com/emuconfig.xsd file:emuconfig.xsd">
-  <SystemGroup Description="Consoles">
-    <EmulatedSystem Description="Famicom">
-      <CompatibleEmulator
-        Name="nestopia"
-        LibraryName="split_famicom" />
-    </EmulatedSystem>
-    <EmulatedSystem Description="Game Boy">
-      <CompatibleEmulator
-        Name="gambatte"
-        LibraryName="split_gb" />
-    </EmulatedSystem>
-    <EmulatedSystem Description="Game Boy Color">
-      <CompatibleEmulator
-        Name="gambatte"
-        LibraryName="split_gbc" />
-    </EmulatedSystem>
-    <EmulatedSystem Description="Game Boy Avance">
-      <CompatibleEmulator
-        Name="mednafen"
-        LibraryName="split_gba" />
-    </EmulatedSystem>
-    <EmulatedSystem Description="Game Gear">
-      <CompatibleEmulator
-        Name="fusion"
-        LibraryName="split_gamegear" />
-    </EmulatedSystem>
-    <EmulatedSystem Description="Master System">
-      <CompatibleEmulator
-        Name="fusion"
-        LibraryName="split_mastersystem" />
-    </EmulatedSystem>
-    <EmulatedSystem Description="Megadrive">
-      <CompatibleEmulator
-        Name="fusion"
-        LibraryName="split_megadrive" />
-    </EmulatedSystem>
-    <EmulatedSystem Description="Nintendo 64">
-      <CompatibleEmulator
-        Name="project64"
-        LibraryName="split_nintendo64" />
-    </EmulatedSystem>
-    <EmulatedSystem Description="Super Famicom">
-      <CompatibleEmulator
+  <SystemNode Description="All Systems" Enabled="true">
+    <SystemGroup Description="Consoles">
+        <EmulatedSystem Description="Famicom">
+          <CompatibleEmulator
+            Name="nestopia"
+            LibraryName="split_famicom" />
+        </EmulatedSystem>
+        <EmulatedSystem Description="Game Boy">
+          <CompatibleEmulator
+            Name="gambatte"
+            LibraryName="split_gb" />
+        </EmulatedSystem>
+        <EmulatedSystem Description="Game Boy Color">
+          <CompatibleEmulator
+            Name="gambatte"
+            LibraryName="split_gbc" />
+        </EmulatedSystem>
+        <EmulatedSystem Description="Game Boy Avance">
+          <CompatibleEmulator
+            Name="mednafen"
+            LibraryName="split_gba" />
+        </EmulatedSystem>
+        <EmulatedSystem Description="Game Gear">
+          <CompatibleEmulator
+            Name="fusion"
+            LibraryName="split_gamegear" />
+        </EmulatedSystem>
+        <EmulatedSystem Description="Master System">
+          <CompatibleEmulator
+            Name="fusion"
+            LibraryName="split_mastersystem" />
+        </EmulatedSystem>
+        <EmulatedSystem Description="Megadrive">
+          <CompatibleEmulator
+            Name="fusion"
+            LibraryName="split_megadrive" />
+        </EmulatedSystem>
+        <EmulatedSystem Description="Nintendo 64">
+          <CompatibleEmulator
+            Name="project64"
+            LibraryName="split_nintendo64" />
+        </EmulatedSystem>
+        <EmulatedSystem Description="Super Famicom">
+          <!--CompatibleEmulator
         Name="higan"
-        LibraryName="higan_superfamicom" />
-    </EmulatedSystem>
-    <EmulatedSystem Description="Atari 2600">
-      <CompatibleEmulator
-        Name="stella"
-        LibraryName="split_2600" />
-    </EmulatedSystem>
-    <EmulatedSystem Description="Playstation">
-      <CompatibleEmulator
-        Name="mednafen"
-        LibraryName="split_psx" />
-    </EmulatedSystem>
+        LibraryName="higan_superfamicom" /-->
+          <CompatibleEmulator
+            Name="retro_arch_bsnes"
+            LibraryName="split_superfamicom" />
+        </EmulatedSystem>
+        <EmulatedSystem Description="Atari 2600">
+          <CompatibleEmulator
+            Name="stella"
+            LibraryName="split_2600" />
+        </EmulatedSystem>
+        <EmulatedSystem Description="Playstation">
+          <CompatibleEmulator
+            Name="mednafen"
+            LibraryName="split_psx" />
+        </EmulatedSystem>
+      </SystemGroup>
+    <SystemGroup Description="Arcade" Enabled="true">
+      <EmulatedSystem Description="Mame">
+        <CompatibleEmulator
+          Name="mame"
+          LibraryName="mame"
+          Enabled="true" />
+      </EmulatedSystem>
+    </SystemGroup>
+  </SystemNode>
+ 
+  
+  
+    <Emulator Name="higan" Description="Higan">
+      <EmulatorPathKey>emulators.higan.path</EmulatorPathKey>
+      <CliParameters>"{0}" -fullscreen</CliParameters>
+    </Emulator>
+    <Emulator Name="fusion" Description="Fusion">
+      <EmulatorPathKey>emulators.fusion.path</EmulatorPathKey>
+      <CliParameters>"{0}" -fullscreen</CliParameters>
+    </Emulator>
+    <Emulator Name="nestopia" Description="NestopiaUE">
+      <EmulatorPathKey>emulators.nestopia.path</EmulatorPathKey>
+      <CliParameters>"{0}" -fullscreen</CliParameters>
+    </Emulator>
+    <Emulator Name="gambatte" Description="NestopiaUE">
+      <EmulatorPathKey>emulators.gambatte.path</EmulatorPathKey>
+      <CliParameters>"{0}" -fullscreen"</CliParameters>
+    </Emulator>
+    <Emulator Name="mednafen" Description="Mednafen">
+      <EmulatorPathKey>emulators.mednafen.path</EmulatorPathKey>
+      <CliParameters>"{0}"</CliParameters>
+    </Emulator>
+    <Emulator Name="project64" Description="Project 64">
+      <EmulatorPathKey>emulators.project64.path</EmulatorPathKey>
+      <CliParameters>"{0}" -fullscreen</CliParameters>
+    </Emulator>
+    <Emulator Name="mame" Description="Mame">
+      <EmulatorPathKey>emulators.mame.path</EmulatorPathKey>
+      <CliParameters>"{0}"</CliParameters>
+    </Emulator>
+    <Emulator Name="stella" Description="Stella">
+      <EmulatorPathKey>emulators.stella.path</EmulatorPathKey>
+      <CliParameters>"{0}"</CliParameters>
+    </Emulator>
+    <Emulator Name="retro_arch_bsnes" Description="RetroArch Bsnes core">
+      <EmulatorPathKey>emulators.retro_arch.path</EmulatorPathKey>
+      <ParametersFromKeys>libretro.cores.bsnes.dll</ParametersFromKeys>
+      <CliParameters>-L "{1}" --fullscreen "{0}"</CliParameters>
+    </Emulator>
 
-  </SystemGroup>
-
-  <SystemGroup Description="Arcade" Enabled="false">
-    <EmulatedSystem Description="Mame">
-      <CompatibleEmulator
-        Name="mame"
-        LibraryName="mame"
-        Enabled="false" />
-    </EmulatedSystem>
-  </SystemGroup>
-  <Emulator Name="higan" Description="Higan">
-    <EmulatorPathKey>emulators.higan.path</EmulatorPathKey>
-    <CliParameters>"{0}" -fullscreen</CliParameters>
-  </Emulator>
-  <Emulator Name="fusion" Description="Fusion">
-    <EmulatorPathKey>emulators.fusion.path</EmulatorPathKey>
-    <CliParameters>"{0}" -fullscreen</CliParameters>
-  </Emulator>
-  <Emulator Name="nestopia" Description="NestopiaUE">
-    <EmulatorPathKey>emulators.nestopia.path</EmulatorPathKey>
-    <CliParameters>"{0}" -fullscreen</CliParameters>
-  </Emulator>
-  <Emulator Name="gambatte" Description="NestopiaUE">
-    <EmulatorPathKey>emulators.gambatte.path</EmulatorPathKey>
-    <CliParameters>"{0}" -fullscreen"</CliParameters>
-  </Emulator>
-  <Emulator Name="mednafen" Description="Mednafen">
-    <EmulatorPathKey>emulators.mednafen.path</EmulatorPathKey>
-    <CliParameters>"{0}"</CliParameters>
-  </Emulator>
-  <Emulator Name="project64" Description="Project 64">
-    <EmulatorPathKey>emulators.project64.path</EmulatorPathKey>
-    <CliParameters>"{0}" -fullscreen</CliParameters>
-  </Emulator>
-  <Emulator Name="mame" Description="Mame">
-    <EmulatorPathKey>emulators.mame.path</EmulatorPathKey>
-    <CliParameters>"{0}"</CliParameters>
-  </Emulator>
-  <Emulator Name="stella" Description="Stella">
-    <EmulatorPathKey>emulators.stella.path</EmulatorPathKey>
-    <CliParameters>"{0}"</CliParameters>
-  </Emulator>
 
   <Library
     Name="split_famicom"
     LibraryClass="OtherParsers.SplitSet.Library"
-    LibraryFolderKey="split.famicom.library" />
+    LibraryFolderKey="split.famicom.library">
+    <RomExtension>.zip</RomExtension>
+  </Library>
   <Library
     Name="split_gb"
     LibraryClass="OtherParsers.SplitSet.Library"
-    LibraryFolderKey="split.gb.library" />
+    LibraryFolderKey="split.gb.library">
+    <RomExtension>.zip</RomExtension>
+  </Library>
   <Library
     Name="split_gbc"
     LibraryClass="OtherParsers.SplitSet.Library"
-    LibraryFolderKey="split.gbc.library" />
+    LibraryFolderKey="split.gbc.library">
+    <RomExtension>.zip</RomExtension>
+  </Library>
   <Library
     Name="split_gba"
     LibraryClass="OtherParsers.SplitSet.Library"
-    LibraryFolderKey="split.gba.library" />
+    LibraryFolderKey="split.gba.library">
+    <RomExtension>.zip</RomExtension>
+  </Library>
   <Library
     Name="split_gamegear"
     LibraryClass="OtherParsers.SplitSet.Library"
-    LibraryFolderKey="split.gamegear.library" />
+    LibraryFolderKey="split.gamegear.library">
+    <RomExtension>.zip</RomExtension>
+  </Library>
   <Library
     Name="split_mastersystem"
     LibraryClass="OtherParsers.SplitSet.Library"
-    LibraryFolderKey="split.mastersystem.library" />
+    LibraryFolderKey="split.mastersystem.library">
+    <RomExtension>.zip</RomExtension>
+  </Library>
   <Library
     Name="split_megadrive"
     LibraryClass="OtherParsers.SplitSet.Library"
-    LibraryFolderKey="split.megadrive.library" />
+    LibraryFolderKey="split.megadrive.library">
+    <RomExtension>.zip</RomExtension>
+  </Library>
   <Library
     Name="split_nintendo64"
     LibraryClass="OtherParsers.SplitSet.Library"
-    LibraryFolderKey="split.nintendo64.library" />
+    LibraryFolderKey="split.nintendo64.library">
+    <RomExtension>.zip</RomExtension>
+  </Library>
+  <Library
+  Name="split_superfamicom"
+  LibraryClass="OtherParsers.SplitSet.Library"
+  LibraryFolderKey="split.superfamicom.library">
+    <RomExtension>.zip</RomExtension>
+  </Library>
   <Library
     Name="split_psx"
     LibraryClass="OtherParsers.SplitSet.Library"
     LibraryFolderKey="split.psx.library">
-      <RomExtension>cue</RomExtension>
-      <RomExtension>ccd</RomExtension>
+    <RomExtension>.cue</RomExtension>
+    <RomExtension>.ccd</RomExtension>
   </Library>
 
   <Library
     Name="split_2600"
     LibraryClass="OtherParsers.SplitSet.Library"
     LibraryFolderKey="split.2600.library">
-    <RomExtension>zip</RomExtension>
-    <RomExtension>bin</RomExtension>
+    <RomExtension>.zip</RomExtension>
+    <RomExtension>.bin</RomExtension>
   </Library>
   <Library
     Name="higan_superfamicom"

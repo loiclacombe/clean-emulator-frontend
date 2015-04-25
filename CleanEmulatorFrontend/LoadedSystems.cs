@@ -1,31 +1,37 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
+using System.Linq;
 using Castle.Core.Internal;
 using GamesData;
-using GamesData.DatData;
 
 namespace CleanEmulatorFrontend
 {
     public class LoadedSystems
     {
-        public IEnumerable<SystemGroup> Groups { get; set; }
+        public IEnumerable<SystemNode> Groups { get; set; }
 
-        public IEnumerable<GamesData.Game> FilterBySystem(EmulatedSystem emulatedSystem)
+        public IDictionary<string, Library> Libraries { get; set; }
+
+        public IEnumerable<Game> FilterBy(EmulatedSystem emulatedSystem)
         {
             var games = EmptySet();
             emulatedSystem.Games.ForEach(g => games.Add(g));
             return games;
         }
 
-        private static SortedSet<GamesData.Game> EmptySet()
+        private static SortedSet<Game> EmptySet()
         {
-            return new SortedSet<GamesData.Game>(new GameComparer());
+            return new SortedSet<Game>(new GameComparer());
         }
 
-        public IEnumerable<GamesData.Game> FilterBySystemGroup(SystemGroup systemGroup)
+        public IEnumerable<Game> FilterBy(SystemNode systemGroup)
         {
             var games = EmptySet();
-            systemGroup.EmulatedSystem.ForEach(sg => sg.Games.ForEach(g => games.Add(g)));
+
+            new List<SystemNode>{systemGroup}
+                .Traverse(n=> n.Items)
+                .OfType<SystemGroup>()
+                .SelectMany(sg=> sg.EmulatedSystem)
+                .ForEach(sg => sg.Games.ForEach(g => games.Add(g)));
             return games;
         }
     }

@@ -1,4 +1,4 @@
-﻿namespace GamesData.DatData
+﻿namespace GamesData
 {
     public struct Rom
     {

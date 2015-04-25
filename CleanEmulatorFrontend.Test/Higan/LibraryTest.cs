@@ -2,7 +2,6 @@
 using AppConfig;
 using FluentAssertions;
 using GamesData;
-using GamesData.DatData;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
 using Library = OtherParsers.Higan.Library;
@@ -27,7 +26,7 @@ namespace CleanEmulatorFrontend.Test.Higan
         {
             var snesSystem = new EmulatedSystem();
 
-            _xmlLibrary.SetupGet(x => x.Folder).Returns("Higan\\TestLibrary");
+            _xmlLibrary.SetupGet(x => x.Path).Returns("Higan\\TestLibrary");
 
             _library.Parse(_xmlLibrary.Object, snesSystem);
             snesSystem.Games.Should().HaveCount(2);

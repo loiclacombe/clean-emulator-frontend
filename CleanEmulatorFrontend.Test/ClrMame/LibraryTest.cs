@@ -24,7 +24,7 @@ namespace CleanEmulatorFrontend.Test.ClrMame
         public void TestParse_clrMameHeader()
         {
             var emulatedSystem = new EmulatedSystem();
-            _libraryData.SetupGet(ld => ld.Folder).Returns("ClrMame\\clrmame_header.dat");
+            _libraryData.SetupGet(ld => ld.Path).Returns("ClrMame\\clrmame_header.dat");
             _library.Parse(_libraryData.Object, emulatedSystem);
             var libraryMetadata = emulatedSystem.LibraryMetadata;
             libraryMetadata.Should().Contain("name", "Nintendo - Super Nintendo Entertainment System");
@@ -37,7 +37,7 @@ namespace CleanEmulatorFrontend.Test.ClrMame
         public void TestParse_verifiedGame()
         {
             var snesSystem = new EmulatedSystem();
-            _libraryData.SetupGet(ld => ld.Folder).Returns("ClrMame\\verified_game.dat");
+            _libraryData.SetupGet(ld => ld.Path).Returns("ClrMame\\verified_game.dat");
             _library.Parse(_libraryData.Object, snesSystem);
             var games = snesSystem.Games.ToList();
             games.Count.Should().Be(1);
@@ -51,7 +51,7 @@ namespace CleanEmulatorFrontend.Test.ClrMame
         public void TestParse_fullDat()
         {
             var snesSystem = new EmulatedSystem();
-            _libraryData.SetupGet(ld => ld.Folder).Returns("ClrMame\\snes.dat");
+            _libraryData.SetupGet(ld => ld.Path).Returns("ClrMame\\snes.dat");
             _library.Parse(_libraryData.Object, snesSystem);
             snesSystem.Games.Count.Should().Be(3365);
         }

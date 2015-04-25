@@ -24,20 +24,20 @@ namespace GamesData {
     [System.Xml.Serialization.XmlRootAttribute(Namespace="http://loiclacombe.com/emuconfig.xsd", IsNullable=false)]
     public partial class SystemConfigRoot {
         
-        private SystemGroup[] systemGroupField;
+        private SystemNode[] systemNodeField;
         
         private Emulator[] emulatorField;
         
         private Library[] libraryField;
         
         /// <remarks/>
-        [System.Xml.Serialization.XmlElementAttribute("SystemGroup")]
-        public SystemGroup[] SystemGroup {
+        [System.Xml.Serialization.XmlElementAttribute("SystemNode")]
+        public SystemNode[] SystemNode {
             get {
-                return this.systemGroupField;
+                return this.systemNodeField;
             }
             set {
-                this.systemGroupField = value;
+                this.systemNodeField = value;
             }
         }
         
@@ -65,31 +65,33 @@ namespace GamesData {
     }
     
     /// <remarks/>
+    [System.Xml.Serialization.XmlIncludeAttribute(typeof(SystemGroup))]
     [System.CodeDom.Compiler.GeneratedCodeAttribute("xsd", "4.0.30319.33440")]
     [System.SerializableAttribute()]
     [System.Diagnostics.DebuggerStepThroughAttribute()]
     [System.ComponentModel.DesignerCategoryAttribute("code")]
     [System.Xml.Serialization.XmlTypeAttribute(Namespace="http://loiclacombe.com/emuconfig.xsd")]
-    public partial class SystemGroup {
+    public partial class SystemNode {
         
-        private EmulatedSystem[] emulatedSystemField;
+        private SystemNode[] itemsField;
         
         private string descriptionField;
         
         private bool enabledField;
         
-        public SystemGroup() {
+        public SystemNode() {
             this.enabledField = true;
         }
         
         /// <remarks/>
-        [System.Xml.Serialization.XmlElementAttribute("EmulatedSystem")]
-        public EmulatedSystem[] EmulatedSystem {
+        [System.Xml.Serialization.XmlElementAttribute("SystemGroup", typeof(SystemGroup))]
+        [System.Xml.Serialization.XmlElementAttribute("SystemNode", typeof(SystemNode))]
+        public SystemNode[] Items {
             get {
-                return this.emulatedSystemField;
+                return this.itemsField;
             }
             set {
-                this.emulatedSystemField = value;
+                this.itemsField = value;
             }
         }
         
@@ -113,6 +115,28 @@ namespace GamesData {
             }
             set {
                 this.enabledField = value;
+            }
+        }
+    }
+    
+    /// <remarks/>
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("xsd", "4.0.30319.33440")]
+    [System.SerializableAttribute()]
+    [System.Diagnostics.DebuggerStepThroughAttribute()]
+    [System.ComponentModel.DesignerCategoryAttribute("code")]
+    [System.Xml.Serialization.XmlTypeAttribute(Namespace="http://loiclacombe.com/emuconfig.xsd")]
+    public partial class SystemGroup : SystemNode {
+        
+        private EmulatedSystem[] emulatedSystemField;
+        
+        /// <remarks/>
+        [System.Xml.Serialization.XmlElementAttribute("EmulatedSystem")]
+        public EmulatedSystem[] EmulatedSystem {
+            get {
+                return this.emulatedSystemField;
+            }
+            set {
+                this.emulatedSystemField = value;
             }
         }
     }
@@ -290,6 +314,8 @@ namespace GamesData {
         
         private string cliParametersField;
         
+        private string[] parametersFromKeysField;
+        
         private string nameField;
         
         private string descriptionField;
@@ -311,6 +337,17 @@ namespace GamesData {
             }
             set {
                 this.cliParametersField = value;
+            }
+        }
+        
+        /// <remarks/>
+        [System.Xml.Serialization.XmlElementAttribute("ParametersFromKeys")]
+        public string[] ParametersFromKeys {
+            get {
+                return this.parametersFromKeysField;
+            }
+            set {
+                this.parametersFromKeysField = value;
             }
         }
         

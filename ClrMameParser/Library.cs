@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using GamesData;
-using GamesData.DatData;
 using Irony.Parsing;
 using log4net;
 
@@ -24,9 +23,9 @@ namespace Parsers.ClrMame
 
          public void Parse(GamesData.Library library, EmulatedSystem emulatedSystem)
         {
-            Logger.DebugFormat("Parsing {0}", library.Folder);
+            Logger.DebugFormat("Parsing {0}", library.Path);
             var parser = new Irony.Parsing.Parser(_datGrammar);
-            using (var reader = new StreamReader(new FileStream(library.Folder, FileMode.Open)))
+            using (var reader = new StreamReader(new FileStream(library.Path, FileMode.Open)))
             {
                 ParseTree parseTree = parser.Parse(reader.ReadToEnd());
                 parseTree.ParserMessages.ForEach(pm => { Console.WriteLine(string.Format("{0} {1}", pm.Message, pm.Location)); });

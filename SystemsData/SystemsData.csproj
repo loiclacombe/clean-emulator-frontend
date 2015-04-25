@@ -78,6 +78,7 @@
     <Compile Include="LibraryData.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Rom.cs" />
+    <Compile Include="SystemGroup.cs" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="emuconfig.xml" />

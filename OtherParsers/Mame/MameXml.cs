@@ -5,7 +5,7 @@ namespace OtherParsers.Mame
 {
     [Serializable]
     [XmlRoot(IsNullable = false, ElementName = "mame")]
-    public class Mame
+    public class MameXml
     {
         /// <remarks />
         [XmlElement("game")]

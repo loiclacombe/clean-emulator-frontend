@@ -30,14 +30,27 @@
     <xs:sequence>
       <xs:element name="EmulatorPathKey" type="xs:string" />
       <xs:element name="CliParameters" type="xs:string" />
+      <xs:element name="ParametersFromKeys" type="xs:string" minOccurs="0" maxOccurs="unbounded" />
     </xs:sequence>
     <xs:attribute name="Name" type="xs:string" />
     <xs:attribute name="Description" type="xs:string" />
   </xs:complexType>
-  <xs:complexType name="SystemGroup">
-    <xs:sequence>
-      <xs:element name="EmulatedSystem" type="tns:EmulatedSystem" minOccurs="1" maxOccurs="unbounded"/>
-    </xs:sequence>
+  
+  <xs:complexType name="SystemGroup" >
+    <xs:complexContent>
+      <xs:extension base="SystemNode">
+        <xs:sequence>
+          <xs:element name="EmulatedSystem" type="tns:EmulatedSystem" minOccurs="0" maxOccurs="unbounded"/>
+        </xs:sequence>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+
+  <xs:complexType name="SystemNode">
+    <xs:choice>
+      <xs:element name="SystemNode" type="tns:SystemNode" minOccurs="0" maxOccurs="unbounded"/>
+      <xs:element name="SystemGroup" type="tns:SystemGroup" minOccurs="0" maxOccurs="unbounded"/>
+    </xs:choice>
     <xs:attribute name="Description" type="xs:string" />
     <xs:attribute name="Enabled" type="xs:boolean" default="true"  />
   </xs:complexType>
@@ -45,7 +58,7 @@
   <xs:element name="SystemConfigRoot">
     <xs:complexType>
       <xs:sequence>
-        <xs:element name="SystemGroup" type="tns:SystemGroup" minOccurs="1" maxOccurs="unbounded" />
+        <xs:element name="SystemNode" type="tns:SystemNode" minOccurs="1" maxOccurs="unbounded" />
         <xs:element name="Emulator" type="tns:Emulator" minOccurs="1" maxOccurs="unbounded" />
         <xs:element name="Library" type="tns:Library" minOccurs="1" maxOccurs="unbounded" />
       </xs:sequence>

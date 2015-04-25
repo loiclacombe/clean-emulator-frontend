@@ -101,7 +101,6 @@
     </Otherwise>
   </Choose>
   <ItemGroup>
-    <Compile Include="MainWindowTest.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
