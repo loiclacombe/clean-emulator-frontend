@@ -1,7 +1,5 @@
-﻿using System;
-using AppConfig;
+﻿using CleanEmulatorFrontend.GamesData;
 using FluentAssertions;
-using GamesData;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using OtherParsers.Mame;
 using Game = OtherParsers.Mame.Game;
@@ -17,23 +15,22 @@ namespace CleanEmulatorFrontend.Test.Mame
         [TestInitialize]
         public void Before()
         {
-            _library=new Library();
+            _library = new Library();
         }
 
         [TestMethod]
         public void TestConvertMameGame()
         {
-            var game = new Game()
-                       {
-                           Description ="My little poney",
-                           Name = "myRomSetName"
-                       };
+            var game = new Game
+            {
+                Description = "My little poney",
+                Name = "myRomSetName"
+            };
             var emulatedSystem = new EmulatedSystem();
-            var result=game.AsGameDataOn(emulatedSystem);
+            var result = game.AsGameDataOn();
 
             result.Description.Should().Be("My little poney");
             result.LaunchPath.Should().Be("myRomSetName");
-            result.System.Should().BeSameAs(emulatedSystem);
         }
     }
 }

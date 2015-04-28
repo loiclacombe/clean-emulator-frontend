@@ -1,9 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
-using GamesData;
+using CleanEmulatorFrontend.GamesData;
 
-namespace Cache
+namespace CleanEmulatorFrontend.Cache
 {
+    [Serializable]
     public class PersistenceContainer
     {
         public const int CurrentVersion = 1;
@@ -16,7 +17,7 @@ namespace Cache
             set { _persistedVersion = value; }
         }
 
-        public Boolean IsCacheValid()
+        public bool IsCacheValid()
         {
             return PersistedVersion == CurrentVersion;
         }

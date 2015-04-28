@@ -1,9 +1,8 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using GamesData;
-using Parsers;
+using CleanEmulatorFrontend.GamesData;
+using ParsersBase;
 using Seterlund.CodeGuard;
 
 namespace OtherParsers.Higan
@@ -12,24 +11,23 @@ namespace OtherParsers.Higan
     {
         private const string Extension = ".sfc";
 
-        public void Parse(GamesData.Library library, EmulatedSystem emulatedSystem)
+        public EmulatedSystemSetsData Parse(CleanEmulatorFrontend.GamesData.Library library)
         {
             Guard.That(library.Path).IsNotNull();
+            var emulatedSystem = new EmulatedSystemSetsData();
             var directoryInfo = new DirectoryInfo(library.Path);
-            DirectoryInfo[] folders = directoryInfo.GetDirectories("*.*", SearchOption.AllDirectories);
+            var folders = directoryInfo.GetDirectories("*.*", SearchOption.AllDirectories);
 
 
-            IEnumerable<DirectoryInfo> roms = folders.Where(IsSfcRom());
-            var games = roms.Select(rom => new Game
+            var roms = folders.Where(IsSfcRom());
+            emulatedSystem.Games = roms.Select(rom => new Game
             {
                 Description = (Path.GetFileNameWithoutExtension(rom.FullName)),
                 LaunchPath = rom.FullName,
-                BasePath = library.Path,
-                System = emulatedSystem
+                BasePath = library.Path
             }).ToList();
-            games.ForEach(emulatedSystem.Games.Add);
+            return emulatedSystem;
         }
-
 
         private static Func<DirectoryInfo, bool> IsSfcRom()
         {

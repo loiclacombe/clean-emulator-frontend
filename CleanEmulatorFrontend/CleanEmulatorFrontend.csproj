@@ -7,7 +7,7 @@
     <ProjectGuid>{156C57AA-91A1-450A-8CA6-4DD0C271D60A}</ProjectGuid>
     <OutputType>WinExe</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>CleanEmulatorFrontend</RootNamespace>
+    <RootNamespace>CleanEmulatorFrontend.GUI</RootNamespace>
     <AssemblyName>CleanEmulatorFrontend</AssemblyName>
     <TargetFrameworkVersion>v4.5.2</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
@@ -52,7 +52,8 @@
     <Prefer32Bit>true</Prefer32Bit>
   </PropertyGroup>
   <PropertyGroup>
-    <StartupObject>CleanEmulatorFrontend.App</StartupObject>
+    <StartupObject>
+    </StartupObject>
   </PropertyGroup>
   <PropertyGroup>
     <ManifestCertificateThumbprint>7295DDE09DEA9FE6CCB42A3F8BC4CC6678BDD6E0</ManifestCertificateThumbprint>
@@ -161,12 +162,11 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
-    <Compile Include="DatsLoader.cs" />
+    <Compile Include="FromDatsGamesDataLoader.cs" />
+    <Compile Include="SystemsDataLoader.cs" />
     <Compile Include="Dialogs\ConfigureEmulators.xaml.cs">
       <DependentUpon>ConfigureEmulators.xaml</DependentUpon>
     </Compile>
-    <Compile Include="EnumerableTools.cs" />
-    <Compile Include="FailsafeCacheLoader.cs" />
     <Compile Include="Properties\Annotations.cs" />
     <Compile Include="LoadedSystems.cs" />
     <Compile Include="TreeViewExtensions.cs" />
@@ -214,9 +214,10 @@
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
     </EmbeddedResource>
     <None Include="LICENSE" />
-    <None Include="log4net.config">
+    <Content Include="log4net.config">
       <SubType>Designer</SubType>
-    </None>
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
     <None Include="packages.config">
       <SubType>Designer</SubType>
     </None>
@@ -255,9 +256,13 @@
       <Project>{359FAC85-4BE6-4FFA-A5B3-EDE9F64EB1A3}</Project>
       <Name>ParsersBase</Name>
     </ProjectReference>
-    <ProjectReference Include="..\SystemsData\SystemsData.csproj">
+    <ProjectReference Include="..\SystemsData\GamesData.csproj">
       <Project>{F1E8E9A7-7B34-4095-9DBC-AE0263D6B59C}</Project>
-      <Name>SystemsData</Name>
+      <Name>GamesData</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Utils\EnumerableUtils.csproj">
+      <Project>{3F7258C5-5102-4CEB-977E-02F95C159B59}</Project>
+      <Name>EnumerableUtils</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>

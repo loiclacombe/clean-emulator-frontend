@@ -1,24 +1,19 @@
-﻿using System;
-using System.Configuration;
-using System.Linq;
-using System.Text;
-using System.Collections.Generic;
+﻿using System.Linq;
 using FluentAssertions;
-using GamesData;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
-using Library = OtherParsers.SplitSet.Library;
+using OtherParsers.SplitSet;
 
 namespace CleanEmulatorFrontend.Test
 {
     /// <summary>
-    /// Summary description for SplitSetTest
+    ///     Summary description for SplitSetTest
     /// </summary>
     [TestClass]
     public class SplitSetTest
     {
-        private Library _library;
-        private Mock<GamesData.Library> _xmlLibrary = new Mock<GamesData.Library>(MockBehavior.Strict);
+        private readonly Library _library;
+        private readonly Mock<GamesData.Library> _xmlLibrary = new Mock<GamesData.Library>(MockBehavior.Default);
 
         public SplitSetTest()
         {
@@ -27,7 +22,35 @@ namespace CleanEmulatorFrontend.Test
             _xmlLibrary.CallBase = true;
         }
 
+        [TestMethod]
+        public void TestParse()
+        {
+            _xmlLibrary.Setup(ld => ld.Paths).Returns(new[]
+            {
+                "SplitSet\\TestLibrary"
+            });
+            _xmlLibrary.Object.RomExtension = new[] {".cue", ".zip"};
+            var result = _library.Parse(_xmlLibrary.Object);
+            var games = result.Games.ToList();
+            games.Sort((l, r) => l.Description.CompareTo(r.Description));
+            games.Should().HaveCount(3);
+            var firstGame = games[0];
+            firstGame.Description.Should().Be("my game iso");
+            firstGame.LaunchPath.Should().EndWith("my game iso.cue");
+
+            var secondGame = games[1];
+
+            secondGame.Description.Should().Be("my other pretty rom (EN)");
+            secondGame.LaunchPath.Should().EndWith("my other pretty rom (EN).zip");
+
+            var thirdGame = games[2];
+
+            thirdGame.Description.Should().Be("my pretty rom (EN)");
+            thirdGame.LaunchPath.Should().EndWith("my pretty rom (EN).zip");
+        }
+
         #region Additional test attributes
+
         //
         // You can use the following additional attributes as you write your tests:
         //
@@ -47,31 +70,7 @@ namespace CleanEmulatorFrontend.Test
         // [TestCleanup()]
         // public void MyTestCleanup() { }
         //
+
         #endregion
-
-        [TestMethod]
-        public void TestParse()
-        {
-            var result = new EmulatedSystem();
-            _xmlLibrary.SetupGet(ld => ld.Path).Returns("SplitSet\\TestLibrary");
-            _xmlLibrary.Object.RomExtension = new[] { "cue" };
-            _library.Parse(_xmlLibrary.Object, result);
-            var games = result.Games.ToList();
-            games.Sort((l, r) => l.Description.CompareTo(r.Description));
-            games.Should().HaveCount(3);
-            var firstGame = games[0];
-            firstGame.Description.Should().Be("my game iso");
-            firstGame.LaunchPath.Should().EndWith("my game iso.cue");
-            
-            var secondGame = games[1];
-
-            secondGame.Description.Should().Be("my other pretty rom (EN)");
-            secondGame.LaunchPath.Should().EndWith("my other pretty rom (EN).zip");
-
-            var thirdGame = games[2];
-
-            thirdGame.Description.Should().Be("my pretty rom (EN)");
-            thirdGame.LaunchPath.Should().EndWith("my pretty rom (EN).zip");
-        }
     }
 }

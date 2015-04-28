@@ -2,47 +2,54 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using GamesData;
+using CleanEmulatorFrontend.GamesData;
 using Irony.Parsing;
 using log4net;
+using Parsers.ClrMame;
+using ParsersBase;
+using Parser = Irony.Parsing.Parser;
 
-namespace Parsers.ClrMame
+namespace ClrMameParser
 {
     public class Library : ILibrary
     {
-        private static readonly ILog Logger = LogManager.GetLogger(typeof(Library));
-        private readonly DatGrammar _datGrammar;
         private const string ClrMamePro = "clrmamepro";
         private const string Game = "game";
+        private static readonly ILog Logger = LogManager.GetLogger(typeof (Library));
+        private readonly DatGrammar _datGrammar;
 
         public Library(DatGrammar datGrammar)
         {
             _datGrammar = datGrammar;
         }
 
-
-         public void Parse(GamesData.Library library, EmulatedSystem emulatedSystem)
+        public EmulatedSystemSetsData Parse(CleanEmulatorFrontend.GamesData.Library library)
         {
+            var emulatedSystem = new EmulatedSystemSetsData
+            {
+                Games = new List<Game>()
+            };
             Logger.DebugFormat("Parsing {0}", library.Path);
-            var parser = new Irony.Parsing.Parser(_datGrammar);
+            var parser = new Parser(_datGrammar);
             using (var reader = new StreamReader(new FileStream(library.Path, FileMode.Open)))
             {
-                ParseTree parseTree = parser.Parse(reader.ReadToEnd());
-                parseTree.ParserMessages.ForEach(pm => { Console.WriteLine(string.Format("{0} {1}", pm.Message, pm.Location)); });
-                ParseTreeNode parseTreeNode = parseTree.Root;
+                var parseTree = parser.Parse(reader.ReadToEnd());
+                parseTree.ParserMessages.ForEach(pm => { Console.WriteLine("{0} {1}", pm.Message, pm.Location); });
+                var parseTreeNode = parseTree.Root;
 
-                ParseTreeNodeList rootList = parseTreeNode.ChildNodes;
+                var rootList = parseTreeNode.ChildNodes;
 
 
-                foreach (ParseTreeNode node in rootList)
+                foreach (var node in rootList)
                 {
                     TryParseClrMameBlock(node, emulatedSystem);
                     TryParseGameBlock(node, emulatedSystem);
                 }
             }
+            return emulatedSystem;
         }
 
-        private void TryParseClrMameBlock(ParseTreeNode node, EmulatedSystem emulatedSystem)
+        private void TryParseClrMameBlock(ParseTreeNode node, EmulatedSystemSetsData emulatedSystem)
         {
             if (PropertyName(node) != ClrMamePro)
             {
@@ -52,16 +59,16 @@ namespace Parsers.ClrMame
             emulatedSystem.LibraryMetadata = ExtractValueProperties(node);
         }
 
-        private void TryParseGameBlock(ParseTreeNode gameNode, EmulatedSystem emulatedSystem)
+        private void TryParseGameBlock(ParseTreeNode gameNode, EmulatedSystemSetsData emulatedSystem)
         {
             if (PropertyName(gameNode) != Game)
             {
                 return;
             }
 
-            IDictionary<string, string> properties = ExtractValueProperties(gameNode);
+            var properties = ExtractValueProperties(gameNode);
             var roms = new List<Rom>();
-            var game = new GamesData.Game
+            var game = new Game
             {
                 Description = properties["description"],
                 LaunchPath = properties["name"]
@@ -85,7 +92,7 @@ namespace Parsers.ClrMame
         private static IDictionary<string, string> ExtractValueProperties(ParseTreeNode propertyNode)
         {
             IDictionary<string, string> valueProperties = new Dictionary<string, string>();
-            foreach (ParseTreeNode metadata in ValueListNodes(propertyNode).Where(IsValueType))
+            foreach (var metadata in ValueListNodes(propertyNode).Where(IsValueType))
             {
                 valueProperties[PropertyName(metadata)] = PropertyText(metadata);
             }
@@ -126,7 +133,5 @@ namespace Parsers.ClrMame
         {
             return node.ChildNodes[1];
         }
-
-
     }
 }

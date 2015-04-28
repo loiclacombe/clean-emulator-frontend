@@ -1,36 +1,32 @@
 ﻿using System.Linq;
-using AppConfig;
+using CleanEmulatorFrontend.GamesData;
 using FluentAssertions;
-using GamesData;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
-using Library = OtherParsers.Higan.Library;
 
 namespace CleanEmulatorFrontend.Test.Higan
 {
     [TestClass]
     public class LibraryTest
     {
-        private Library _library;
-        private Mock<GamesData.Library> _xmlLibrary = new Mock<GamesData.Library>(MockBehavior.Strict);
+        private readonly Mock<Library> _xmlLibrary = new Mock<Library>(MockBehavior.Strict);
+        private OtherParsers.Higan.Library _library;
 
         [TestInitialize]
         public void SetUp()
         {
-            _library = new Library();
+            _library = new OtherParsers.Higan.Library();
             _xmlLibrary.ResetCalls();
         }
 
         [TestMethod]
         public void TestParse()
         {
-            var snesSystem = new EmulatedSystem();
-
             _xmlLibrary.SetupGet(x => x.Path).Returns("Higan\\TestLibrary");
 
-            _library.Parse(_xmlLibrary.Object, snesSystem);
+            var snesSystem = _library.Parse(_xmlLibrary.Object);
             snesSystem.Games.Should().HaveCount(2);
-            var games=snesSystem.Games.ToList();
+            var games = snesSystem.Games.ToList();
             games[0].Description.Should().Be("Akumajou Dracula (Japan)");
             games[0].LaunchPath.Should().EndWith("Akumajou Dracula (Japan).sfc");
             games[1].Description.Should().Be("Final Fight 2 (NA) (1.0)");

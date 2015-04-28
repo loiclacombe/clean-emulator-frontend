@@ -11,8 +11,8 @@ namespace AppConfig
             get
             {
                 return Path.Combine(Environment.GetFolderPath(
-    Environment.SpecialFolder.ApplicationData), "CleanEmulatorFrontend",
-                          "Dats");
+                    Environment.SpecialFolder.ApplicationData), "CleanEmulatorFrontend",
+                    "Dats");
             }
         }
 

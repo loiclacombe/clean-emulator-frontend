@@ -1,9 +1,9 @@
-using GamesData;
+using CleanEmulatorFrontend.GamesData;
 
-namespace Parsers
+namespace ParsersBase
 {
     public interface ILibrary
     {
-        void Parse(GamesData.Library library, EmulatedSystem emulatedSystem);
+        EmulatedSystemSetsData Parse(Library library);
     }
 }

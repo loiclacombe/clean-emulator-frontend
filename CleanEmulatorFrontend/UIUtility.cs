@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Windows.Controls;
 using System.Windows.Controls.Primitives;
 
@@ -10,7 +9,7 @@ namespace SynesthesiaM
     public static class UIUtility
     {
         /// <summary>
-        /// Selects an item in a hierarchial ItemsControl using a set of options
+        ///     Selects an item in a hierarchial ItemsControl using a set of options
         /// </summary>
         /// <typeparam name="T">The type of the items present in the control and in the options</typeparam>
         /// <param name="control">The ItemsControl to select an item in</param>
@@ -23,7 +22,7 @@ namespace SynesthesiaM
             {
                 // Compare each item in the container and look for the next item
                 // in the chain.
-                foreach (object item in control.Items)
+                foreach (var item in control.Items)
                 {
                     var convertedItem = default(T);
 
@@ -35,14 +34,14 @@ namespace SynesthesiaM
                     }
                     else
                     {
-                        convertedItem = (T)item;
+                        convertedItem = (T) item;
                     }
 
                     // Compare the converted item with the item in the chain
                     if ((info.CompareMethod != null) &&
                         info.CompareMethod(convertedItem, currentItem))
                     {
-                        var container = (ItemsControl)control.ItemContainerGenerator.ContainerFromItem(item);
+                        var container = (ItemsControl) control.ItemContainerGenerator.ContainerFromItem(item);
 
                         // Replace with the remaining items in the chain
                         info.Items = info.Items.Skip(1);
@@ -62,7 +61,7 @@ namespace SynesthesiaM
                             if (info.OnNeedMoreItems != null)
                             {
                                 info.OnNeedMoreItems(container, info);
-                                SetSelectedItem<T>(container, info);
+                                SetSelectedItem(container, info);
                             }
                         }
 
@@ -96,27 +95,27 @@ namespace SynesthesiaM
     public class SetSelectedInfo<T>
     {
         /// <summary>
-        /// Gets or sets the chain of items to search for. The last item in the chain will be selected.
+        ///     Gets or sets the chain of items to search for. The last item in the chain will be selected.
         /// </summary>
         public IEnumerable<T> Items { get; set; }
 
         /// <summary>
-        /// Gets or sets the method used to compare items in the control with items in the chain
+        ///     Gets or sets the method used to compare items in the control with items in the chain
         /// </summary>
         public Func<T, T, bool> CompareMethod { get; set; }
 
         /// <summary>
-        /// Gets or sets the method used to convert items in the control to be compare with items in the chain
+        ///     Gets or sets the method used to convert items in the control to be compare with items in the chain
         /// </summary>
         public Func<object, T> ConvertMethod { get; set; }
 
         /// <summary>
-        /// Gets or sets the method used to select the final item in the chain
+        ///     Gets or sets the method used to select the final item in the chain
         /// </summary>
         public SetSelectedEventHandler<T> OnSelected { get; set; }
 
         /// <summary>
-        /// Gets or sets the method used to request more child items to be generated in the control
+        ///     Gets or sets the method used to request more child items to be generated in the control
         /// </summary>
         public SetSelectedEventHandler<T> OnNeedMoreItems { get; set; }
     }

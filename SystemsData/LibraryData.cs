@@ -1,10 +1,10 @@
 using System.Collections.Generic;
 
-namespace GamesData
+namespace CleanEmulatorFrontend.GamesData
 {
     public class LibraryData
     {
-        private IList<EmulatedSystem> _systems=new List<EmulatedSystem>(); 
+        private IList<EmulatedSystem> _systems = new List<EmulatedSystem>();
         public IDictionary<string, string> Metadata { get; set; }
 
         public IList<EmulatedSystem> Systems

@@ -4,7 +4,7 @@ using System.Windows;
 namespace CleanEmulatorFrontend.Dialogs
 {
     /// <summary>
-    /// Interaction logic for ErrorDialog.xaml
+    ///     Interaction logic for ErrorDialog.xaml
     /// </summary>
     public partial class ErrorDialog : Window
     {
@@ -28,7 +28,7 @@ namespace CleanEmulatorFrontend.Dialogs
 
         public static void DisplayException(Exception e)
         {
-            string message = e.Message + "\n" + e.StackTrace;
+            var message = e.Message + "\n" + e.StackTrace;
             if (e.InnerException != null)
             {
                 message += "\n" + e.InnerException.Message + "\n" + e.InnerException.StackTrace;

@@ -38,6 +38,12 @@
     <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="FluentAssertions">
+      <HintPath>..\packages\FluentAssertions.3.3.0\lib\net45\FluentAssertions.dll</HintPath>
+    </Reference>
+    <Reference Include="FluentAssertions.Core">
+      <HintPath>..\packages\FluentAssertions.3.3.0\lib\net45\FluentAssertions.Core.dll</HintPath>
+    </Reference>
     <Reference Include="Microsoft.Reactive.Testing, Version=2.2.5.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\packages\Rx-Testing.2.2.5\lib\net45\Microsoft.Reactive.Testing.dll</HintPath>
@@ -86,6 +92,8 @@
       <HintPath>..\packages\Rx-XAML.2.2.5\lib\net45\System.Reactive.Windows.Threading.dll</HintPath>
     </Reference>
     <Reference Include="System.Xaml" />
+    <Reference Include="System.Xml" />
+    <Reference Include="System.Xml.Linq" />
     <Reference Include="WindowsBase" />
   </ItemGroup>
   <Choose>
@@ -101,6 +109,7 @@
     </Otherwise>
   </Choose>
   <ItemGroup>
+    <Compile Include="EnumerableToolsTest.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
@@ -111,6 +120,14 @@
     <ProjectReference Include="..\CleanEmulatorFrontend\CleanEmulatorFrontend.csproj">
       <Project>{156c57aa-91a1-450a-8ca6-4dd0c271d60a}</Project>
       <Name>CleanEmulatorFrontend</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\SystemsData\GamesData.csproj">
+      <Project>{F1E8E9A7-7B34-4095-9DBC-AE0263D6B59C}</Project>
+      <Name>GamesData</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Utils\EnumerableUtils.csproj">
+      <Project>{3F7258C5-5102-4CEB-977E-02F95C159B59}</Project>
+      <Name>EnumerableUtils</Name>
     </ProjectReference>
   </ItemGroup>
   <Choose>

@@ -1,6 +1,6 @@
 ﻿using System.Diagnostics;
 
-namespace GamesData
+namespace CleanEmulatorFrontend.GamesData
 {
     public interface ILauncher
     {

@@ -1,4 +1,4 @@
-﻿namespace GamesData
+﻿namespace CleanEmulatorFrontend.GamesData
 {
     public struct Rom
     {

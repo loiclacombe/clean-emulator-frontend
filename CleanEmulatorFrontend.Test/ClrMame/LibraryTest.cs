@@ -1,11 +1,9 @@
 using System.Linq;
+using ClrMameParser;
 using FluentAssertions;
-using GamesData;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
 using Parsers.ClrMame;
-using Parser = Parsers.ClrMame.Parser;
-using Library = Parsers.ClrMame.Library;
 
 namespace CleanEmulatorFrontend.Test.ClrMame
 {
@@ -13,7 +11,7 @@ namespace CleanEmulatorFrontend.Test.ClrMame
     public class LibraryTest
     {
         private readonly Library _library = new Library(new DatGrammar());
-        private Mock<GamesData.Library> _libraryData=new Mock<GamesData.Library>();
+        private readonly Mock<GamesData.Library> _libraryData = new Mock<GamesData.Library>();
 
         public void Initialize()
         {
@@ -23,9 +21,8 @@ namespace CleanEmulatorFrontend.Test.ClrMame
         [TestMethod]
         public void TestParse_clrMameHeader()
         {
-            var emulatedSystem = new EmulatedSystem();
             _libraryData.SetupGet(ld => ld.Path).Returns("ClrMame\\clrmame_header.dat");
-            _library.Parse(_libraryData.Object, emulatedSystem);
+            var emulatedSystem = _library.Parse(_libraryData.Object);
             var libraryMetadata = emulatedSystem.LibraryMetadata;
             libraryMetadata.Should().Contain("name", "Nintendo - Super Nintendo Entertainment System");
             libraryMetadata.Should().Contain("description", "Nintendo - Super Nintendo Entertainment System");
@@ -36,13 +33,11 @@ namespace CleanEmulatorFrontend.Test.ClrMame
         [TestMethod]
         public void TestParse_verifiedGame()
         {
-            var snesSystem = new EmulatedSystem();
             _libraryData.SetupGet(ld => ld.Path).Returns("ClrMame\\verified_game.dat");
-            _library.Parse(_libraryData.Object, snesSystem);
+            var snesSystem = _library.Parse(_libraryData.Object);
             var games = snesSystem.Games.ToList();
             games.Count.Should().Be(1);
-            snesSystem.Description.Should().BeNull();
-            var firstGame=games[0];
+            var firstGame = games[0];
             firstGame.Description.Should().Be("ACME Animation Factory (USA)");
             firstGame.LaunchPath.Should().Be("ACME Animation Factory (USA)");
         }
@@ -50,11 +45,9 @@ namespace CleanEmulatorFrontend.Test.ClrMame
         [TestMethod]
         public void TestParse_fullDat()
         {
-            var snesSystem = new EmulatedSystem();
             _libraryData.SetupGet(ld => ld.Path).Returns("ClrMame\\snes.dat");
-            _library.Parse(_libraryData.Object, snesSystem);
+            var snesSystem = _library.Parse(_libraryData.Object);
             snesSystem.Games.Count.Should().Be(3365);
         }
     }
-
 }

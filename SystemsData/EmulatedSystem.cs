@@ -1,16 +1,14 @@
 ﻿using System.Collections.Generic;
 using System.Xml.Serialization;
-using Newtonsoft.Json;
 
-namespace GamesData
+namespace CleanEmulatorFrontend.GamesData
 {
     public partial class EmulatedSystem
     {
-        private IList<Game> _games=new List<Game>();
         private IList<string> _extensions = new List<string>();
+        private IList<Game> _games = new List<Game>();
 
         [XmlIgnore]
-        [JsonIgnore]
         public Emulator Emulator { get; set; }
 
         [XmlIgnore]
@@ -19,8 +17,10 @@ namespace GamesData
             get { return _games; }
             set { _games = value; }
         }
+
         [XmlIgnore]
         public IDictionary<string, string> LibraryMetadata { get; set; }
+
         [XmlIgnore]
         public IList<string> Extensions
         {

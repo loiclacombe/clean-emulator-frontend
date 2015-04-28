@@ -49,9 +49,9 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\SystemsData\SystemsData.csproj">
+    <ProjectReference Include="..\SystemsData\GamesData.csproj">
       <Project>{F1E8E9A7-7B34-4095-9DBC-AE0263D6B59C}</Project>
-      <Name>SystemsData</Name>
+      <Name>GamesData</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>

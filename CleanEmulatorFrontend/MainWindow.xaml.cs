@@ -2,17 +2,21 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
+using System.Reactive;
 using System.Reactive.Linq;
 using System.Reflection;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
 using CleanEmulatorFrontend.Dialogs;
-using GamesData;
-using Launchers;
+using CleanEmulatorFrontend.GamesData;
+using CleanEmulatorFrontend.GUI;
 using log4net;
+using Launchers;
 using ReactiveUI;
+
 // ReSharper disable PossibleMultipleEnumeration
+
 namespace CleanEmulatorFrontend
 {
     /// <summary>
@@ -21,42 +25,49 @@ namespace CleanEmulatorFrontend
     public partial class MainWindow : Window
     {
         private static readonly ILog Logger = LogManager.GetLogger(typeof (MainWindow));
-
-        private readonly Random _random;
         private readonly Func<ConfigureEmulators> _configureEmulators;
-        private readonly FailsafeCacheLoader _failsafeCacheLoader;
-
+        private readonly ReactiveList<Game> _displayed = new ReactiveList<Game>();
+        private readonly Random _random;
+        private readonly SystemsDataLoader _systemsDataLoader;
         private IEnumerable<Game> _all = new List<Game>();
         private LoadedSystems _loadedSystems;
-        private readonly ReactiveList<Game> _displayed = new ReactiveList<Game>();
+        private ReactiveCommand<LoadedSystems> _forceRefreshTreesFromData;
 
-
-        public MainWindow(FailsafeCacheLoader failsafeCacheLoader, Random random,
+        public MainWindow(SystemsDataLoader systemsDataLoader, Random random,
             Func<ConfigureEmulators> configureEmulators)
         {
-            _failsafeCacheLoader = failsafeCacheLoader;
+            _systemsDataLoader = systemsDataLoader;
             _random = random;
             _configureEmulators = configureEmulators;
-            _failsafeCacheLoader = failsafeCacheLoader;
 
             InitializeComponent();
         }
 
         public void InitializeContent()
         {
-            _failsafeCacheLoader.LoadLibraries();
-            SelectDefaultSystem();
-            InitTrees();
-            InitEvents();
+            var refreshTreesFromData = ReactiveCommand.CreateAsyncTask(async _ =>  await _systemsDataLoader.LoadLibraries());
+            _forceRefreshTreesFromData = ReactiveCommand.CreateAsyncTask<LoadedSystems>(async _ => await _systemsDataLoader.ForceLoadFromDats());
+
+
+            refreshTreesFromData.ExecuteAsync()
+                .ObserveOn(RxApp.MainThreadScheduler)
+                .Subscribe(loadedSystems =>
+                {
+                    RefreshTree(loadedSystems);
+                    SelectDefaultSystem();
+                });
+            refreshTreesFromData.ThrownExceptions.Subscribe(e => { Logger.Error(e); });
+            _forceRefreshTreesFromData.ThrownExceptions.Subscribe(e => { Logger.Error(e); });
 
             WindowState = WindowState.Maximized;
         }
 
-        private void InitTrees()
+        private void RefreshTree(LoadedSystems loadedSystems)
         {
-            _loadedSystems = _failsafeCacheLoader.LoadLibraries();
+            _loadedSystems = loadedSystems;
             SystemsTree.ItemsSource = _loadedSystems.Groups;
             GamesGrid.ItemsSource = _displayed;
+            InitEvents();
         }
 
         private void InitEvents()
@@ -68,55 +79,60 @@ namespace CleanEmulatorFrontend
                 .KeyUp
                 .Where(IsCtrlAndK)
                 .Subscribe(o =>
-                           {
-                               SearchGameBlock.Text = string.Empty;
-                               SearchGameBlock.Focus();
-                           });
+                {
+                    SearchGameBlock.Text = string.Empty;
+                    SearchGameBlock.Focus();
+                });
 
             SearchGameBlock.Events()
                 .KeyUp
                 .Where(k => k.Key == Key.Enter)
                 .Select(k => SearchGameBlock.Text)
+                .ObserveOn(RxApp.MainThreadScheduler)
                 .Subscribe(FilterGames);
+
 
             RefreshCacheButton.Events()
                 .PreviewMouseDown
-                .Subscribe(e => _failsafeCacheLoader.ForceLoadFromDats());
+                .Subscribe(e =>
+                {
+                    _forceRefreshTreesFromData.ExecuteAsync()
+                    .ObserveOn(RxApp.MainThreadScheduler)
+                    .Subscribe(RefreshTree);
+                });
 
             ConfigureButton.Events()
                 .PreviewMouseDown
                 .Subscribe(e =>
-                           {
-                               var configureEmulators = _configureEmulators();
-                               configureEmulators.ShowDialog();
-                           });
-
+                {
+                    var configureEmulators = _configureEmulators();
+                    configureEmulators.ShowDialog();
+                });
         }
-
-
 
         private void GameLaunchEvents()
         {
-            IObservable<Game> doubleClickedOnGame = GamesGrid.Events()
+            var doubleClickedOnGame = GamesGrid.Events()
                 .MouseDoubleClick
                 .Select(e => e.MouseDevice.DirectlyOver)
                 .Where(e => e is FrameworkElement
                             && ((FrameworkElement) e).Parent is DataGridCell)
                 .Where(OnlyOneGameIsSelected)
                 .Select(SelectedGame);
-            IObservable<Game> pressedEnterToLaunchGame = GamesGrid.Events()
+            var pressedEnterToLaunchGame = GamesGrid.Events()
                 .KeyUp
                 .Where(k => k.Key == Key.Enter)
                 .Where(OnlyOneGameIsSelected)
                 .Select(SelectedGame);
 
-            IObservable<Game> clickedRandomGameLaunch = RandomGameButton.Events()
+            var clickedRandomGameLaunch = RandomGameButton.Events()
                 .PreviewMouseLeftButtonDown
                 .Select(PickRandomGame);
 
             pressedEnterToLaunchGame
                 .Merge(doubleClickedOnGame)
                 .Merge(clickedRandomGameLaunch)
+                .ObserveOn(RxApp.MainThreadScheduler)
                 .Subscribe(LaunchSelectedGame);
 
             //prevent movement to next line on press enter
@@ -128,18 +144,18 @@ namespace CleanEmulatorFrontend
 
         private Game PickRandomGame(MouseButtonEventArgs arg)
         {
-            int randomGameIndex = _random.Next(_displayed.Count);
+            var randomGameIndex = _random.Next(_displayed.Count);
             return _displayed[randomGameIndex];
         }
 
-        internal Game SelectedGame(Object anything)
+        internal Game SelectedGame(object anything)
         {
             return GamesGrid.SelectedItem as Game;
         }
 
         internal void FilterGames(string text)
         {
-            string[] words = text.ToLower().Split(' ');
+            var words = text.ToLower().Split(' ');
             _displayed.Clear();
             var filtered = _all.Where(g => AllWordsAreContainedIn(g, words)).ToList();
             if (filtered.Any())
@@ -148,7 +164,7 @@ namespace CleanEmulatorFrontend
 
         internal void SystemSelectionEvents()
         {
-            IObservable<object> selectedSystemChanged = SystemsTree
+            var selectedSystemChanged = SystemsTree
                 .Events()
                 .SelectedItemChanged
                 .Select(s => s.NewValue);
@@ -179,10 +195,9 @@ namespace CleanEmulatorFrontend
 
         internal void SelectDefaultSystem()
         {
-            SystemsTree.SetSelectedItem("Consoles",
-                o => o.GetType() == typeof (SystemGroup) ? ((SystemGroup) o).Description : "zzzzzzzz");
+            SystemsTree.SetSelectedItem("All Systems",
+                o => o.GetType() == typeof (SystemNode) ? ((SystemNode) o).Description : "zzzzzzzz");
         }
-
 
         internal void LaunchSelectedGame(Game game)
         {
@@ -195,7 +210,7 @@ namespace CleanEmulatorFrontend
                         ErrorDialog.DisplayError(process.StartInfo + "\n" + process.ErrorMessage));
         }
 
-        internal bool OnlyOneGameIsSelected(Object o)
+        internal bool OnlyOneGameIsSelected(object o)
         {
             return GamesGrid.SelectedItems.Count == 1;
         }
@@ -209,14 +224,14 @@ namespace CleanEmulatorFrontend
         {
             try
             {
-                DependencyObject dObject = control
+                var dObject = control
                     .ItemContainerGenerator
                     .ContainerFromItem(item);
 
                 //uncomment the following line if UI updates are unnecessary
                 ((TreeViewItem) dObject).IsSelected = true;
 
-                MethodInfo selectMethod =
+                var selectMethod =
                     typeof (TreeViewItem).GetMethod("Select",
                         BindingFlags.NonPublic | BindingFlags.Instance);
 
@@ -238,7 +253,7 @@ namespace CleanEmulatorFrontend
     {
         public static IObservable<ExitedProcess> Start(this Game game)
         {
-            Process process = game.System.Emulator.Launcher.StartGame(game);
+            var process = game.System.Emulator.Launcher.StartGame(game);
             return Observable.FromEventPattern(
                 ev => process.Exited += ev,
                 ev => process.Exited -= ev)
