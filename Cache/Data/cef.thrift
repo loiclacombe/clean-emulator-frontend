@@ -13,5 +13,6 @@ struct EmulatedSystem{
 struct Game{
     1: string Description,
     2: string BasePath,
-    3: string LaunchPath
+    3: string LaunchPath,
+	4: string Guid
 }

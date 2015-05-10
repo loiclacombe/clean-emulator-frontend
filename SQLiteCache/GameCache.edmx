@@ -1,0 +1,313 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<edmx:Edmx Version="3.0" xmlns:edmx="http://schemas.microsoft.com/ado/2009/11/edmx">
+  <!-- EF Runtime content -->
+  <edmx:Runtime>
+    <!-- SSDL content -->
+    <edmx:StorageModels>
+    <Schema Namespace="GamesCacheModel.Store" Provider="System.Data.SQLite.EF6" ProviderManifestToken="data source=C:\Users\Damaki\Code\clean-emulator-frontend\SQLiteCache\GamesCache.dblite" Alias="Self" xmlns:store="http://schemas.microsoft.com/ado/2007/12/edm/EntityStoreSchemaGenerator" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm/ssdl">
+        <EntityType Name="base_path">
+          <Key>
+            <PropertyRef Name="base_path_id" />
+          </Key>
+          <Property Name="base_path_id" Type="integer" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="bp_path" Type="nvarchar" MaxLength="2147483647" Nullable="false" />
+        </EntityType>
+        <EntityType Name="emulated_system">
+          <Key>
+            <PropertyRef Name="emusys_id" />
+          </Key>
+          <Property Name="emusys_id" Type="integer" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="name" Type="nvarchar" MaxLength="2147483647" Nullable="false" />
+        </EntityType>
+        <EntityType Name="game">
+          <Key>
+            <PropertyRef Name="game_id" />
+          </Key>
+          <Property Name="game_id" Type="integer" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="gguid" Type="uniqueidentifier" Nullable="false" />
+          <Property Name="played" Type="integer" Nullable="false" />
+          <Property Name="description" Type="nvarchar" MaxLength="2147483647" Nullable="false" />
+          <Property Name="launch_path" Type="nvarchar" MaxLength="2147483647" Nullable="false" />
+          <Property Name="emusys_id" Type="integer" Nullable="false" />
+        </EntityType>
+        <EntityType Name="game_base_path">
+          <Key>
+            <PropertyRef Name="game_id" />
+          </Key>
+          <Property Name="game_id" Type="integer" Nullable="false" />
+          <Property Name="base_path_id" Type="integer" />
+        </EntityType>
+        <EntityType Name="last_played">
+          <Key>
+            <PropertyRef Name="game_id" />
+          </Key>
+          <Property Name="game_id" Type="integer" Nullable="false" />
+          <Property Name="last_played_date" Type="datetime" Nullable="false" />
+        </EntityType>
+        <Association Name="FK_game_0_0">
+          <End Role="emulated_system" Type="Self.emulated_system" Multiplicity="1" />
+          <End Role="game" Type="Self.game" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="emulated_system">
+              <PropertyRef Name="emusys_id" />
+            </Principal>
+            <Dependent Role="game">
+              <PropertyRef Name="emusys_id" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_game_base_path_0_0">
+          <End Role="base_path" Type="Self.base_path" Multiplicity="0..1" />
+          <End Role="game_base_path" Type="Self.game_base_path" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="base_path">
+              <PropertyRef Name="base_path_id" />
+            </Principal>
+            <Dependent Role="game_base_path">
+              <PropertyRef Name="base_path_id" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_game_base_path_1_0">
+          <End Role="game" Type="Self.game" Multiplicity="1" />
+          <End Role="game_base_path" Type="Self.game_base_path" Multiplicity="0..1" />
+          <ReferentialConstraint>
+            <Principal Role="game">
+              <PropertyRef Name="game_id" />
+            </Principal>
+            <Dependent Role="game_base_path">
+              <PropertyRef Name="game_id" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_last_played_0_0">
+          <End Role="game" Type="Self.game" Multiplicity="1" />
+          <End Role="last_played" Type="Self.last_played" Multiplicity="0..1" />
+          <ReferentialConstraint>
+            <Principal Role="game">
+              <PropertyRef Name="game_id" />
+            </Principal>
+            <Dependent Role="last_played">
+              <PropertyRef Name="game_id" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <EntityContainer Name="GamesCacheModelStoreContainer">
+          <EntitySet Name="base_path" EntityType="Self.base_path" store:Type="Tables" />
+          <EntitySet Name="emulated_system" EntityType="Self.emulated_system" store:Type="Tables" />
+          <EntitySet Name="game" EntityType="Self.game" store:Type="Tables" />
+          <EntitySet Name="game_base_path" EntityType="Self.game_base_path" store:Type="Tables" />
+          <EntitySet Name="last_played" EntityType="Self.last_played" store:Type="Tables" />
+          <AssociationSet Name="FK_game_0_0" Association="Self.FK_game_0_0">
+            <End Role="emulated_system" EntitySet="emulated_system" />
+            <End Role="game" EntitySet="game" />
+          </AssociationSet>
+          <AssociationSet Name="FK_game_base_path_0_0" Association="Self.FK_game_base_path_0_0">
+            <End Role="base_path" EntitySet="base_path" />
+            <End Role="game_base_path" EntitySet="game_base_path" />
+          </AssociationSet>
+          <AssociationSet Name="FK_game_base_path_1_0" Association="Self.FK_game_base_path_1_0">
+            <End Role="game" EntitySet="game" />
+            <End Role="game_base_path" EntitySet="game_base_path" />
+          </AssociationSet>
+          <AssociationSet Name="FK_last_played_0_0" Association="Self.FK_last_played_0_0">
+            <End Role="game" EntitySet="game" />
+            <End Role="last_played" EntitySet="last_played" />
+          </AssociationSet>
+        </EntityContainer>
+      </Schema></edmx:StorageModels>
+    <!-- CSDL content -->
+    <edmx:ConceptualModels>
+      <Schema Namespace="GamesCacheModel" Alias="Self" annotation:UseStrongSpatialTypes="false" xmlns:annotation="http://schemas.microsoft.com/ado/2009/02/edm/annotation" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm">
+        <EntityContainer Name="GamesCacheEntities" annotation:LazyLoadingEnabled="true">
+          <EntitySet Name="base_path" EntityType="GamesCacheModel.base_path" />
+          <EntitySet Name="emulated_system" EntityType="GamesCacheModel.emulated_system" />
+          <EntitySet Name="games" EntityType="GamesCacheModel.game" />
+          <EntitySet Name="game_base_path" EntityType="GamesCacheModel.game_base_path" />
+          <EntitySet Name="last_played" EntityType="GamesCacheModel.last_played" />
+          <AssociationSet Name="FK_game_base_path_0_0" Association="GamesCacheModel.FK_game_base_path_0_0">
+            <End Role="base_path" EntitySet="base_path" />
+            <End Role="game_base_path" EntitySet="game_base_path" />
+          </AssociationSet>
+          <AssociationSet Name="FK_game_0_0" Association="GamesCacheModel.FK_game_0_0">
+            <End Role="emulated_system" EntitySet="emulated_system" />
+            <End Role="game" EntitySet="games" />
+          </AssociationSet>
+          <AssociationSet Name="FK_game_base_path_1_0" Association="GamesCacheModel.FK_game_base_path_1_0">
+            <End Role="game" EntitySet="games" />
+            <End Role="game_base_path" EntitySet="game_base_path" />
+          </AssociationSet>
+          <AssociationSet Name="FK_last_played_0_0" Association="GamesCacheModel.FK_last_played_0_0">
+            <End Role="game" EntitySet="games" />
+            <End Role="last_played" EntitySet="last_played" />
+          </AssociationSet>
+        </EntityContainer>
+        <EntityType Name="base_path">
+          <Key>
+            <PropertyRef Name="base_path_id" />
+          </Key>
+          <Property Name="base_path_id" Type="Int64" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="bp_path" Type="String" Nullable="false" MaxLength="2147483647" FixedLength="false" Unicode="true" />
+          <NavigationProperty Name="game_base_path" Relationship="GamesCacheModel.FK_game_base_path_0_0" FromRole="base_path" ToRole="game_base_path" />
+        </EntityType>
+        <EntityType Name="emulated_system">
+          <Key>
+            <PropertyRef Name="emusys_id" />
+          </Key>
+          <Property Name="emusys_id" Type="Int64" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="name" Type="String" Nullable="false" MaxLength="2147483647" FixedLength="false" Unicode="true" />
+          <NavigationProperty Name="games" Relationship="GamesCacheModel.FK_game_0_0" FromRole="emulated_system" ToRole="game" />
+        </EntityType>
+        <EntityType Name="game">
+          <Key>
+            <PropertyRef Name="game_id" />
+          </Key>
+          <Property Name="game_id" Type="Int64" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="gguid" Type="Guid" Nullable="false" />
+          <Property Name="played" Type="Int64" Nullable="false" />
+          <Property Name="description" Type="String" Nullable="false" MaxLength="2147483647" FixedLength="false" Unicode="true" />
+          <Property Name="launch_path" Type="String" Nullable="false" MaxLength="2147483647" FixedLength="false" Unicode="true" />
+          <Property Name="emusys_id" Type="Int64" Nullable="false" />
+          <NavigationProperty Name="emulated_system" Relationship="GamesCacheModel.FK_game_0_0" FromRole="game" ToRole="emulated_system" />
+          <NavigationProperty Name="game_base_path" Relationship="GamesCacheModel.FK_game_base_path_1_0" FromRole="game" ToRole="game_base_path" />
+          <NavigationProperty Name="last_played" Relationship="GamesCacheModel.FK_last_played_0_0" FromRole="game" ToRole="last_played" />
+        </EntityType>
+        <EntityType Name="game_base_path">
+          <Key>
+            <PropertyRef Name="game_id" />
+          </Key>
+          <Property Name="game_id" Type="Int64" Nullable="false" />
+          <Property Name="base_path_id" Type="Int64" />
+          <NavigationProperty Name="base_path" Relationship="GamesCacheModel.FK_game_base_path_0_0" FromRole="game_base_path" ToRole="base_path" />
+          <NavigationProperty Name="game" Relationship="GamesCacheModel.FK_game_base_path_1_0" FromRole="game_base_path" ToRole="game" />
+        </EntityType>
+        <EntityType Name="last_played">
+          <Key>
+            <PropertyRef Name="game_id" />
+          </Key>
+          <Property Name="game_id" Type="Int64" Nullable="false" />
+          <Property Name="last_played_date" Type="DateTime" Nullable="false" />
+          <NavigationProperty Name="game" Relationship="GamesCacheModel.FK_last_played_0_0" FromRole="last_played" ToRole="game" />
+        </EntityType>
+        <Association Name="FK_game_base_path_0_0">
+          <End Type="GamesCacheModel.base_path" Role="base_path" Multiplicity="0..1" />
+          <End Type="GamesCacheModel.game_base_path" Role="game_base_path" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="base_path">
+              <PropertyRef Name="base_path_id" />
+            </Principal>
+            <Dependent Role="game_base_path">
+              <PropertyRef Name="base_path_id" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_game_0_0">
+          <End Type="GamesCacheModel.emulated_system" Role="emulated_system" Multiplicity="1" />
+          <End Type="GamesCacheModel.game" Role="game" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="emulated_system">
+              <PropertyRef Name="emusys_id" />
+            </Principal>
+            <Dependent Role="game">
+              <PropertyRef Name="emusys_id" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_game_base_path_1_0">
+          <End Type="GamesCacheModel.game" Role="game" Multiplicity="1" />
+          <End Type="GamesCacheModel.game_base_path" Role="game_base_path" Multiplicity="0..1" />
+          <ReferentialConstraint>
+            <Principal Role="game">
+              <PropertyRef Name="game_id" />
+            </Principal>
+            <Dependent Role="game_base_path">
+              <PropertyRef Name="game_id" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_last_played_0_0">
+          <End Type="GamesCacheModel.game" Role="game" Multiplicity="1" />
+          <End Type="GamesCacheModel.last_played" Role="last_played" Multiplicity="0..1" />
+          <ReferentialConstraint>
+            <Principal Role="game">
+              <PropertyRef Name="game_id" />
+            </Principal>
+            <Dependent Role="last_played">
+              <PropertyRef Name="game_id" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        </Schema>
+    </edmx:ConceptualModels>
+    <!-- C-S mapping content -->
+    <edmx:Mappings>
+      <Mapping Space="C-S" xmlns="http://schemas.microsoft.com/ado/2009/11/mapping/cs">
+        <EntityContainerMapping StorageEntityContainer="GamesCacheModelStoreContainer" CdmEntityContainer="GamesCacheEntities">
+          <EntitySetMapping Name="base_path">
+            <EntityTypeMapping TypeName="GamesCacheModel.base_path">
+              <MappingFragment StoreEntitySet="base_path">
+                <ScalarProperty Name="bp_path" ColumnName="bp_path" />
+                <ScalarProperty Name="base_path_id" ColumnName="base_path_id" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="emulated_system">
+            <EntityTypeMapping TypeName="GamesCacheModel.emulated_system">
+              <MappingFragment StoreEntitySet="emulated_system">
+                <ScalarProperty Name="name" ColumnName="name" />
+                <ScalarProperty Name="emusys_id" ColumnName="emusys_id" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="games">
+            <EntityTypeMapping TypeName="GamesCacheModel.game">
+              <MappingFragment StoreEntitySet="game">
+                <ScalarProperty Name="emusys_id" ColumnName="emusys_id" />
+                <ScalarProperty Name="launch_path" ColumnName="launch_path" />
+                <ScalarProperty Name="description" ColumnName="description" />
+                <ScalarProperty Name="played" ColumnName="played" />
+                <ScalarProperty Name="gguid" ColumnName="gguid" />
+                <ScalarProperty Name="game_id" ColumnName="game_id" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="game_base_path">
+            <EntityTypeMapping TypeName="GamesCacheModel.game_base_path">
+              <MappingFragment StoreEntitySet="game_base_path">
+                <ScalarProperty Name="base_path_id" ColumnName="base_path_id" />
+                <ScalarProperty Name="game_id" ColumnName="game_id" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="last_played">
+            <EntityTypeMapping TypeName="GamesCacheModel.last_played">
+              <MappingFragment StoreEntitySet="last_played">
+                <ScalarProperty Name="last_played_date" ColumnName="last_played_date" />
+                <ScalarProperty Name="game_id" ColumnName="game_id" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+        </EntityContainerMapping>
+      </Mapping>
+    </edmx:Mappings>
+  </edmx:Runtime>
+  <!-- EF Designer content (DO NOT EDIT MANUALLY BELOW HERE) -->
+  <Designer xmlns="http://schemas.microsoft.com/ado/2009/11/edmx">
+    <Connection>
+      <DesignerInfoPropertySet>
+        <DesignerProperty Name="MetadataArtifactProcessing" Value="EmbedInOutputAssembly" />
+      </DesignerInfoPropertySet>
+    </Connection>
+    <Options>
+      <DesignerInfoPropertySet>
+        <DesignerProperty Name="ValidateOnBuild" Value="true" />
+        <DesignerProperty Name="EnablePluralization" Value="true" />
+        <DesignerProperty Name="IncludeForeignKeysInModel" Value="true" />
+        <DesignerProperty Name="UseLegacyProvider" Value="false" />
+        <DesignerProperty Name="CodeGenerationStrategy" Value="None" />
+      </DesignerInfoPropertySet>
+    </Options>
+    <!-- Diagram content (shape and connector positions) -->
+    <Diagrams></Diagrams>
+  </Designer>
+</edmx:Edmx>

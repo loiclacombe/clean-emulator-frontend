@@ -18,14 +18,14 @@ namespace CleanEmulatorFrontend.GUI
         private readonly Func<LoadedSystems> _cacheProvider;
         private readonly FromDatsGamesDataLoader _fromDatsGamesDataLoader;
         private readonly SystemConfigRootLoader _systemConfigRootLoader;
-        private readonly ThriftCacheManager _thriftCacheManager;
+        private readonly ICacheManager _cacheManager;
 
         public SystemsDataLoader(Func<LoadedSystems> cacheProvider, SystemConfigRootLoader systemConfigRootLoader,
-            ThriftCacheManager thriftCacheManager, FromDatsGamesDataLoader fromDatsGamesDataLoader)
+            ICacheManager cacheManager, FromDatsGamesDataLoader fromDatsGamesDataLoader)
         {
             _cacheProvider = cacheProvider;
             _systemConfigRootLoader = systemConfigRootLoader;
-            _thriftCacheManager = thriftCacheManager;
+            _cacheManager = cacheManager;
             _fromDatsGamesDataLoader = fromDatsGamesDataLoader;
         }
 
@@ -51,7 +51,7 @@ namespace CleanEmulatorFrontend.GUI
         {
             var emulatedSystems = systemConfigRoot.AllSystems;
 
-            var cachedData = _thriftCacheManager.Load();
+            var cachedData = _cacheManager.Load();
             var stopwatch = new Stopwatch();
             stopwatch.Start();
             foreach (var emulatedSystem in emulatedSystems)
@@ -78,7 +78,15 @@ namespace CleanEmulatorFrontend.GUI
             Logger.DebugFormat("FillEmulatedSystems in {0} ", stopwatch.Elapsed);
             if (!cachedData.IsValid)
             {
-                _thriftCacheManager.Write(emulatedSystems.ToList());
+                try
+                {
+                    _cacheManager.Write(emulatedSystems.ToList());
+                }
+                catch (Exception e)
+                {
+                    Logger.Error("Could not write cache", e);
+                    throw;
+                }
             }
         }
 
@@ -109,7 +117,7 @@ namespace CleanEmulatorFrontend.GUI
 
         public async Task<LoadedSystems> ForceLoadFromDats()
         {
-            _thriftCacheManager.InvalidateCache();
+            _cacheManager.InvalidateCache();
             var forceLoadFromDats = await LoadLibraries();
             return forceLoadFromDats;
         }

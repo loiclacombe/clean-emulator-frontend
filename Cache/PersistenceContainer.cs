@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using CleanEmulatorFrontend.GamesData;
 
-namespace CleanEmulatorFrontend.Cache
+namespace CleanEmulatorFrontend.Cache.Thrift
 {
     [Serializable]
     public class PersistenceContainer

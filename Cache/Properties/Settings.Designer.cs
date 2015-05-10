@@ -8,7 +8,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace CleanEmulatorFrontend.Cache.Properties {
+namespace CleanEmulatorFrontend.Cache.Thrift.Properties {
     
     
     [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]

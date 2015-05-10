@@ -64,9 +64,13 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\Cache\Cache.csproj">
+    <ProjectReference Include="..\BaseCache\BaseCache.csproj">
+      <Project>{6E216D7B-43A8-4D67-9B11-EE0A18034BE2}</Project>
+      <Name>BaseCache</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Cache\ThriftCache.csproj">
       <Project>{57BC7614-CA58-4018-B452-4F696138302D}</Project>
-      <Name>Cache</Name>
+      <Name>ThriftCache</Name>
     </ProjectReference>
     <ProjectReference Include="..\SystemsData\GamesData.csproj">
       <Project>{F1E8E9A7-7B34-4095-9DBC-AE0263D6B59C}</Project>

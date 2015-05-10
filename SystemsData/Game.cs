@@ -6,10 +6,16 @@ namespace CleanEmulatorFrontend.GamesData
 {
     public class Game
     {
+        public Guid Guid { get; set; }
         public string Description { get; set; }
         public string BasePath { get; set; }
         public string LaunchPath { get; set; }
         public EmulatedSystem System { get; set; }
+
+        public Game()
+        {
+            Guid = Guid.NewGuid();
+        }
 
         public string AbsoluteLaunchPath
         {

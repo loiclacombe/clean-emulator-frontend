@@ -1,9 +1,12 @@
-﻿using System.Reflection;
+﻿using System;
+using System.Reflection;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Xml.Serialization;
 using CleanEmulatorFrontend.Cache;
 using CleanEmulatorFrontend.GamesData;
+using CleanEmulatorFrontend.SqLiteCache;
+using log4net;
 using log4net.Config;
 using Launchers;
 using Lucene.Net.Analysis;
@@ -20,6 +23,7 @@ namespace CleanEmulatorFrontend.GUI
     {
         private IKernel _container;
         private MainWindow _mainWindow;
+        private static readonly ILog Logger = LogManager.GetLogger(typeof(App));
 
         protected override void OnStartup(StartupEventArgs e)
         {
@@ -32,17 +36,26 @@ namespace CleanEmulatorFrontend.GUI
 
         private void ConfigureContainer()
         {
-            _container = new StandardKernel();
-            _container.Bind<MainWindow>().ToSelf().InSingletonScope();
-            _container.Bind<GenericLauncher>().ToSelf().InSingletonScope();
-            _container.Bind<Directory>().ToConstant(new RAMDirectory());
-            _container.Bind<Analyzer>().To<SimpleAnalyzer>().InSingletonScope();
-            _container.Bind<SystemConfigRootLoader>().ToSelf().InSingletonScope();
-            _container.Bind<IndexWriter.MaxFieldLength>().ToConstant(new IndexWriter.MaxFieldLength(50));
-            _container.Bind<LoadedSystems>().ToSelf().InSingletonScope();
-            _container.Bind<ThriftCacheManager>().ToSelf().InSingletonScope();
+            try
+            {
+                _container = new StandardKernel();
+                _container.Bind<MainWindow>().ToSelf().InSingletonScope();
+                _container.Bind<GenericLauncher>().ToSelf().InSingletonScope();
+                _container.Bind<Directory>().ToConstant(new RAMDirectory());
+                _container.Bind<Analyzer>().To<SimpleAnalyzer>().InSingletonScope();
+                _container.Bind<SystemConfigRootLoader>().ToSelf().InSingletonScope();
+                _container.Bind<IndexWriter.MaxFieldLength>().ToConstant(new IndexWriter.MaxFieldLength(50));
+                _container.Bind<LoadedSystems>().ToSelf().InSingletonScope();
+                _container.Bind<ICacheManager>().To<SqLiteCacheManager>().InSingletonScope();
 
-            _mainWindow = _container.Get<MainWindow>();
+                _mainWindow = _container.Get<MainWindow>();
+            }
+            catch (Exception e)
+            {
+                Logger.Error("Injection initialization failed", e);
+                throw;
+            }
+
         }
 
         private void ComposeObjects()

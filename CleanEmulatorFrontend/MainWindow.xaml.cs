@@ -202,7 +202,9 @@ namespace CleanEmulatorFrontend
         internal void LaunchSelectedGame(Game game)
         {
             if (game == null) return;
-            game.Start()
+            var startResult = game.Start();
+            _loadedSystems.RecordGameLaunch(game);
+            startResult
                 .Where(p => p.ExitCode != 0
                             && string.IsNullOrEmpty(p.ErrorMessage))
                 .Subscribe(

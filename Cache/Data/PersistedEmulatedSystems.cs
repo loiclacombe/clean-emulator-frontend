@@ -4,18 +4,13 @@
  * DO NOT EDIT UNLESS YOU ARE SURE THAT YOU KNOW WHAT YOU ARE DOING
  *  @generated
  */
+
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Text;
-using System.IO;
-using Thrift;
-using Thrift.Collections;
-using System.Runtime.Serialization;
 using Thrift.Protocol;
-using Thrift.Transport;
 
-namespace CleanEmulatorFrontend.Cache.Data
+namespace CleanEmulatorFrontend.Cache.Thrift.Data
 {
 
   #if !SILVERLIGHT
