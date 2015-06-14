@@ -1,8 +1,9 @@
 ﻿using System.Linq;
+using AppConfig;
 using FluentAssertions;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
-using OtherParsers.SplitSet;
+using Library = OtherParsers.SplitSet.Library;
 
 namespace CleanEmulatorFrontend.Test
 {
@@ -17,7 +18,7 @@ namespace CleanEmulatorFrontend.Test
 
         public SplitSetTest()
         {
-            _library = new Library();
+            _library = new Library(new UserConfiguration());
             _xmlLibrary.ResetCalls();
             _xmlLibrary.CallBase = true;
         }
@@ -30,7 +31,7 @@ namespace CleanEmulatorFrontend.Test
                 "SplitSet\\TestLibrary"
             });
             _xmlLibrary.Object.RomExtension = new[] {".cue", ".zip"};
-            var result = _library.Parse(_xmlLibrary.Object);
+            var result = _library.Parse(_xmlLibrary.Object).Result;
             var games = result.Games.ToList();
             games.Sort((l, r) => l.Description.CompareTo(r.Description));
             games.Should().HaveCount(3);

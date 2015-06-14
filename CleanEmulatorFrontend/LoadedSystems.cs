@@ -1,9 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using AppConfig;
 using Castle.Core.Internal;
 using CleanEmulatorFrontend.GamesData;
 using EnumerableUtils;
+using Library = CleanEmulatorFrontend.GamesData.Library;
 
 namespace CleanEmulatorFrontend.GUI
 {

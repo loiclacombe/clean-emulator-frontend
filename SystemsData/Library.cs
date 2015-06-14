@@ -1,26 +1,23 @@
-﻿using System.Configuration;
+﻿using System;
+using System.Configuration;
 using System.IO;
 using System.Linq;
+using AppConfig;
 
 namespace CleanEmulatorFrontend.GamesData
 {
     public partial class Library
     {
-        private const char Separator = ';';
-
-        public virtual string Path
-        {
-            get { return ConfigurationManager.AppSettings[LibraryFolderKey]; }
-        }
-
-        public virtual string[] Paths
-        {
-            get { return Path.Split(Separator); }
-        }
+        public virtual string[] Paths { get; set; }
 
         public bool IsRom(FileInfo romFile)
         {
             return RomExtension.Contains(romFile.Extension);
+        }
+
+        public bool IsValid()
+        {
+            return Paths != null && Paths.Count()!=0 ;
         }
     }
 }

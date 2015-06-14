@@ -8,12 +8,12 @@ namespace OtherParsers.Mame
     public class MameXml
     {
         /// <remarks />
-        [XmlElement("game")]
-        public Game[] Game { get; set; }
+        [XmlElement("machine")]
+        public Machine[] Machine { get; set; }
     }
 
     /// <remarks />
-    public class Game
+    public class Machine
     {
         [XmlElement("description")]
         public string Description { get; set; }

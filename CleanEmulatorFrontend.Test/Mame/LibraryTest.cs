@@ -1,8 +1,9 @@
-﻿using CleanEmulatorFrontend.GamesData;
+﻿using AppConfig;
+using CleanEmulatorFrontend.GamesData;
 using FluentAssertions;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using OtherParsers.Mame;
-using Game = OtherParsers.Mame.Game;
+using Machine = OtherParsers.Mame.Machine;
 using Library = OtherParsers.Mame.Library;
 
 namespace CleanEmulatorFrontend.Test.Mame
@@ -15,13 +16,13 @@ namespace CleanEmulatorFrontend.Test.Mame
         [TestInitialize]
         public void Before()
         {
-            _library = new Library();
+            _library = new Library(new UserConfiguration());
         }
 
         [TestMethod]
         public void TestConvertMameGame()
         {
-            var game = new Game
+            var game = new Machine
             {
                 Description = "My little poney",
                 Name = "myRomSetName"

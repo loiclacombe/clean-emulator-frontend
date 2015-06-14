@@ -91,6 +91,10 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\AppConfig\AppConfig.csproj">
+      <Project>{406150EC-C2B6-4931-89D4-96775C662493}</Project>
+      <Name>AppConfig</Name>
+    </ProjectReference>
     <ProjectReference Include="..\Utils\EnumerableUtils.csproj">
       <Project>{3F7258C5-5102-4CEB-977E-02F95C159B59}</Project>
       <Name>EnumerableUtils</Name>

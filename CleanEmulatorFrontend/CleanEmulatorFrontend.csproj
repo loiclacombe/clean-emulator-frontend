@@ -186,6 +186,7 @@
     </ApplicationDefinition>
     <Compile Include="FromDatsGamesDataLoader.cs" />
     <Compile Include="GameStats.cs" />
+    <Compile Include="SystemConfigRootLoader.cs" />
     <Compile Include="SystemsDataLoader.cs" />
     <Compile Include="Dialogs\ConfigureEmulators.xaml.cs">
       <DependentUpon>ConfigureEmulators.xaml</DependentUpon>

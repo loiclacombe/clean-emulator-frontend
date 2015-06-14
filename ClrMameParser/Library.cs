@@ -2,6 +2,8 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Threading.Tasks;
+using AppConfig;
 using CleanEmulatorFrontend.GamesData;
 using Irony.Parsing;
 using log4net;
@@ -23,30 +25,43 @@ namespace ClrMameParser
             _datGrammar = datGrammar;
         }
 
-        public EmulatedSystemSetsData Parse(CleanEmulatorFrontend.GamesData.Library library)
+        public async Task<EmulatedSystemSetsData> Parse(CleanEmulatorFrontend.GamesData.Library library)
         {
             var emulatedSystem = new EmulatedSystemSetsData
             {
                 Games = new List<Game>()
             };
-            Logger.DebugFormat("Parsing {0}", library.Path);
-            var parser = new Parser(_datGrammar);
-            using (var reader = new StreamReader(new FileStream(library.Path, FileMode.Open)))
+            Logger.DebugFormat("Parsing {0}", library.Paths);
+            ParseClrMameDat(library);
+
+            var parseTree = await ParseClrMameDatAsync(library);
+            parseTree.ParserMessages.ForEach(pm => { Console.WriteLine("{0} {1}", pm.Message, pm.Location); });
+            var parseTreeNode = parseTree.Root;
+
+            var rootList = parseTreeNode.ChildNodes;
+
+
+            foreach (var node in rootList)
             {
-                var parseTree = parser.Parse(reader.ReadToEnd());
-                parseTree.ParserMessages.ForEach(pm => { Console.WriteLine("{0} {1}", pm.Message, pm.Location); });
-                var parseTreeNode = parseTree.Root;
-
-                var rootList = parseTreeNode.ChildNodes;
-
-
-                foreach (var node in rootList)
-                {
-                    TryParseClrMameBlock(node, emulatedSystem);
-                    TryParseGameBlock(node, emulatedSystem);
-                }
+                TryParseClrMameBlock(node, emulatedSystem);
+                TryParseGameBlock(node, emulatedSystem);
             }
+
             return emulatedSystem;
+        }
+
+        private Task<ParseTree> ParseClrMameDatAsync(CleanEmulatorFrontend.GamesData.Library library)
+        {
+            return Task.Run(() => ParseClrMameDat(library));
+        }
+
+        private ParseTree ParseClrMameDat(CleanEmulatorFrontend.GamesData.Library library)
+        {
+            var parser = new Parser(_datGrammar);
+            using (var reader = new StreamReader(new FileStream(library.Paths[0], FileMode.Open)))
+            {
+                return parser.Parse(reader.ReadToEnd());
+            }
         }
 
         private void TryParseClrMameBlock(ParseTreeNode node, EmulatedSystemSetsData emulatedSystem)

@@ -5,6 +5,7 @@ using System.IO;
 using System.Linq;
 using System.Threading;
 using CleanEmulatorFrontend.Cache;
+using CleanEmulatorFrontend.Cache.Thrift;
 using CleanEmulatorFrontend.GamesData;
 using FluentAssertions;
 using Microsoft.VisualStudio.TestTools.UnitTesting;

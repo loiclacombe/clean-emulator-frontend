@@ -3,9 +3,6 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
-using AutoMapper;
-using AutoMapper.Mappers;
-using CleanEmulatorFrontend.Cache.Data;
 using CleanEmulatorFrontend.Cache.Thrift.Data;
 using log4net;
 using Thrift.Protocol;
@@ -16,7 +13,7 @@ using GDGame = CleanEmulatorFrontend.GamesData.Game;
 using GDEmulatedSystem = CleanEmulatorFrontend.GamesData.EmulatedSystem;
 
 
-namespace CleanEmulatorFrontend.Cache
+namespace CleanEmulatorFrontend.Cache.Thrift
 {
     public class ThriftCacheManager : ICacheManager
     {

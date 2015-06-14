@@ -62,6 +62,10 @@
     </None>
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\AppConfig\AppConfig.csproj">
+      <Project>{406150EC-C2B6-4931-89D4-96775C662493}</Project>
+      <Name>AppConfig</Name>
+    </ProjectReference>
     <ProjectReference Include="..\ParsersBase\ParsersBase.csproj">
       <Project>{359fac85-4be6-4ffa-a5b3-ede9f64eb1a3}</Project>
       <Name>ParsersBase</Name>

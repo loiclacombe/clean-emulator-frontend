@@ -37,7 +37,7 @@
       </EmulatedSystem>
       <EmulatedSystem Description="Megadrive" ShortName="md">
         <CompatibleEmulator
-          Name="fusion"
+          Name="mess_genesis"
           LibraryName="split_megadrive" />
       </EmulatedSystem>
       <EmulatedSystem Description="Nintendo 64" ShortName="n64">
@@ -76,44 +76,46 @@
 
 
   <Emulator Name="higan" Description="Higan">
-    <EmulatorPathKey>emulators.higan.path</EmulatorPathKey>
+    <EmulatorPathKey>higan</EmulatorPathKey>
     <CliParameters>"{0}" -fullscreen</CliParameters>
   </Emulator>
   <Emulator Name="fusion" Description="Fusion">
-    <EmulatorPathKey>emulators.fusion.path</EmulatorPathKey>
+    <EmulatorPathKey>fusion</EmulatorPathKey>
     <CliParameters>"{0}" -fullscreen</CliParameters>
   </Emulator>
   <Emulator Name="nestopia" Description="NestopiaUE">
-    <EmulatorPathKey>emulators.nestopia.path</EmulatorPathKey>
+    <EmulatorPathKey>nestopia</EmulatorPathKey>
     <CliParameters>"{0}" -fullscreen</CliParameters>
   </Emulator>
   <Emulator Name="gambatte" Description="NestopiaUE">
-    <EmulatorPathKey>emulators.gambatte.path</EmulatorPathKey>
+    <EmulatorPathKey>gambatte</EmulatorPathKey>
     <CliParameters>"{0}" -fullscreen"</CliParameters>
   </Emulator>
   <Emulator Name="mednafen" Description="Mednafen">
-    <EmulatorPathKey>emulators.mednafen.path</EmulatorPathKey>
+    <EmulatorPathKey>mednafen</EmulatorPathKey>
     <CliParameters>"{0}"</CliParameters>
   </Emulator>
   <Emulator Name="project64" Description="Project 64">
-    <EmulatorPathKey>emulators.project64.path</EmulatorPathKey>
+    <EmulatorPathKey>project64</EmulatorPathKey>
     <CliParameters>"{0}" -fullscreen</CliParameters>
   </Emulator>
   <Emulator Name="mame" Description="Mame">
-    <EmulatorPathKey>emulators.mame.path</EmulatorPathKey>
+    <EmulatorPathKey>mame</EmulatorPathKey>
     <CliParameters>"{0}"</CliParameters>
   </Emulator>
   <Emulator Name="stella" Description="Stella">
-    <EmulatorPathKey>emulators.stella.path</EmulatorPathKey>
+    <EmulatorPathKey>stella</EmulatorPathKey>
     <CliParameters>"{0}"</CliParameters>
   </Emulator>
   <Emulator Name="retro_arch_bsnes" Description="RetroArch Bsnes core">
-    <EmulatorPathKey>emulators.retro_arch.path</EmulatorPathKey>
+    <EmulatorPathKey>retro_arch</EmulatorPathKey>
     <ParametersFromKeys>libretro.cores.bsnes.dll</ParametersFromKeys>
     <CliParameters>-L "{1}" --fullscreen "{0}"</CliParameters>
   </Emulator>
-
-
+    <Emulator Name="mess_genesis" Description="MESS">
+	  <EmulatorPathKey>mess</EmulatorPathKey>
+	  <CliParameters>genesis -cart "{0}"</CliParameters>
+  </Emulator>
   <Library
     Name="split_famicom"
     LibraryClass="OtherParsers.SplitSet.Library"

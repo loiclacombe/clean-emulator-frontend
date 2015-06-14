@@ -9,12 +9,12 @@ namespace CleanEmulatorFrontend
     public static class TreeViewExtensions
     {
         /// <summary>
-        ///     Selects an item in a TreeView using a path
+        ///     Selects an item in a TreeView using a Path
         /// </summary>
         /// <param name="treeView">The TreeView to select an item in</param>
         /// <param name="path">
-        ///     The path to the selected item.
-        ///     Components of the path are separated with Path.DirectorySeparatorChar.
+        ///     The Path to the selected item.
+        ///     Components of the Path are separated with Path.DirectorySeparatorChar.
         ///     Items in the control are converted by calling the ToString method.
         /// </param>
         public static void SetSelectedItem(this TreeView treeView, string path)
@@ -23,14 +23,14 @@ namespace CleanEmulatorFrontend
         }
 
         /// <summary>
-        ///     Selects an item in a TreeView using a path and a custom conversion method
+        ///     Selects an item in a TreeView using a Path and a custom conversion method
         /// </summary>
         /// <param name="treeView">The TreeView to select an item in</param>
         /// <param name="path">
-        ///     The path to the selected item.
-        ///     Components of the path are separated with Path.DirectorySeparatorChar.
+        ///     The Path to the selected item.
+        ///     Components of the Path are separated with Path.DirectorySeparatorChar.
         /// </param>
-        /// <param name="convertMethod">A custom method that converts items in the control to their respective path component</param>
+        /// <param name="convertMethod">A custom method that converts items in the control to their respective Path component</param>
         public static void SetSelectedItem(this TreeView treeView, string path,
             Func<object, string> convertMethod)
         {
@@ -38,11 +38,11 @@ namespace CleanEmulatorFrontend
         }
 
         /// <summary>
-        ///     Selects an item in a TreeView using a path and a custom path separator character.
+        ///     Selects an item in a TreeView using a Path and a custom Path separator character.
         /// </summary>
         /// <param name="treeView">The TreeView to select an item in</param>
-        /// <param name="path">The path to the selected item</param>
-        /// <param name="separatorChar">The character that separates path components</param>
+        /// <param name="path">The Path to the selected item</param>
+        /// <param name="separatorChar">The character that separates Path components</param>
         public static void SetSelectedItem(this TreeView treeView, string path,
             char separatorChar)
         {
@@ -50,13 +50,13 @@ namespace CleanEmulatorFrontend
         }
 
         /// <summary>
-        ///     Selects an item in a TreeView using a path, a custom conversion method,
-        ///     and a custom path separator character.
+        ///     Selects an item in a TreeView using a Path, a custom conversion method,
+        ///     and a custom Path separator character.
         /// </summary>
         /// <param name="treeView">The TreeView to select an item in</param>
-        /// <param name="path">The path to the selected item</param>
-        /// <param name="convertMethod">A custom method that converts items in the control to their respective path component</param>
-        /// <param name="separatorChar">The character that separates path components</param>
+        /// <param name="path">The Path to the selected item</param>
+        /// <param name="convertMethod">A custom method that converts items in the control to their respective Path component</param>
+        /// <param name="separatorChar">The character that separates Path components</param>
         public static void SetSelectedItem(this TreeView treeView, string path,
             Func<object, string> convertMethod, char separatorChar)
         {

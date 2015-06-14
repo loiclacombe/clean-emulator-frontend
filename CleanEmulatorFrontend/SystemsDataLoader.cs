@@ -1,12 +1,17 @@
 ﻿using System;
+using System.Configuration;
 using System.Diagnostics;
+using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
+using System.Xml.Serialization;
+using AppConfig;
 using Castle.Core.Internal;
 using CleanEmulatorFrontend.Cache;
 using CleanEmulatorFrontend.GamesData;
+using CleanEmulatorFrontend.SqLiteCache;
 using log4net;
-using HiganLibrary = OtherParsers.Higan.Library;
+using OtherParsers.Mame;
 using MameLibrary = OtherParsers.Mame.Library;
 using SplitSetLibrary = OtherParsers.SplitSet.Library;
 
@@ -15,10 +20,11 @@ namespace CleanEmulatorFrontend.GUI
     public class SystemsDataLoader
     {
         private static readonly ILog Logger = LogManager.GetLogger(typeof (SystemsDataLoader));
+        private readonly ICacheManager _cacheManager;
         private readonly Func<LoadedSystems> _cacheProvider;
         private readonly FromDatsGamesDataLoader _fromDatsGamesDataLoader;
         private readonly SystemConfigRootLoader _systemConfigRootLoader;
-        private readonly ICacheManager _cacheManager;
+        private readonly UserConfiguration _userConfiguration;
 
         public SystemsDataLoader(Func<LoadedSystems> cacheProvider, SystemConfigRootLoader systemConfigRootLoader,
             ICacheManager cacheManager, FromDatsGamesDataLoader fromDatsGamesDataLoader)
@@ -29,13 +35,15 @@ namespace CleanEmulatorFrontend.GUI
             _fromDatsGamesDataLoader = fromDatsGamesDataLoader;
         }
 
-        public async Task<LoadedSystems> LoadLibraries()
+
+        public async Task<LoadedSystems> LoadLibraries(bool forceReload = false)
         {
             var systemConfigRoot = await _systemConfigRootLoader.ReadEmuConfig();
+
             return await Task.Run(() =>
             {
                 var rootGroups = systemConfigRoot.SystemNode;
-                FillEmulatedSystems(systemConfigRoot);
+                FillEmulatedSystems(systemConfigRoot, forceReload);
                 systemConfigRoot.AllNodes
                     .Where(n => n.Items != null)
                     .ForEach(n => Array.Sort(n.Items,
@@ -47,40 +55,40 @@ namespace CleanEmulatorFrontend.GUI
             });
         }
 
-        private void FillEmulatedSystems(SystemConfigRoot systemConfigRoot)
+        private void FillEmulatedSystems(SystemConfigRoot systemConfigRoot, bool forceReload)
         {
-            var emulatedSystems = systemConfigRoot.AllSystems;
+            CachedSystems cachedData;
 
-            var cachedData = _cacheManager.Load();
+            if (forceReload)
+            {
+                cachedData = new CachedSystems();
+                cachedData.Invalidate();
+            }
+            else
+            {
+                cachedData = _cacheManager.Load();
+            }
+
             var stopwatch = new Stopwatch();
             stopwatch.Start();
-            foreach (var emulatedSystem in emulatedSystems)
-            {
-                emulatedSystem.Emulator = systemConfigRoot.EmulatorsDict[emulatedSystem.CompatibleEmulator.Name];
-                if (cachedData.IsValid && cachedData.EmulatedSystems.ContainsKey(emulatedSystem.ShortName))
-                {
-                    Logger.DebugFormat("Reading system {0} from cache", emulatedSystem.Description);
-                    emulatedSystem.Games = cachedData.EmulatedSystems[emulatedSystem.ShortName].Games;
-                }
-                else
-                {
-                    cachedData.Invalidate();
-                    Logger.DebugFormat("Reading system {0} from dats", emulatedSystem.Description);
-                    var emulatedSystemSetsData = _fromDatsGamesDataLoader.LoadGamesData(systemConfigRoot,
-                        emulatedSystem.CompatibleEmulator);
-                    emulatedSystem.Games = emulatedSystemSetsData.Games;
-                }
 
-                FilterInvalidGames(emulatedSystem);
-                PostProcessGames(emulatedSystem);
+            if (cachedData.IsValid)
+            {
+                ReadGamesFromCache(systemConfigRoot, cachedData);
             }
+            else
+            {
+                ReadGamesFromDats(systemConfigRoot, cachedData);
+            }
+            systemConfigRoot.AllSystems.AsParallel().ForEach(PostProcessGames);
+
             stopwatch.Stop();
             Logger.DebugFormat("FillEmulatedSystems in {0} ", stopwatch.Elapsed);
             if (!cachedData.IsValid)
             {
                 try
                 {
-                    _cacheManager.Write(emulatedSystems.ToList());
+                    _cacheManager.Write(systemConfigRoot.AllSystems);
                 }
                 catch (Exception e)
                 {
@@ -88,6 +96,33 @@ namespace CleanEmulatorFrontend.GUI
                     throw;
                 }
             }
+        }
+
+        private void ReadGamesFromCache(SystemConfigRoot systemConfigRoot, CachedSystems cachedData)
+        {
+            systemConfigRoot.AllSystems.AsParallel()
+                .ForEach(
+                    es =>
+                    {
+                        Logger.DebugFormat("Reading system {0} from cache", es.Description);
+                        es.Games = cachedData.EmulatedSystems[es.ShortName].Games;
+                    }
+                );
+        }
+
+
+        private void ReadGamesFromDats(SystemConfigRoot systemConfigRoot, CachedSystems cachedData)
+        {
+            systemConfigRoot.AllSystems.AsParallel()
+                .ForEach(
+                    async es =>
+                    {
+                        Logger.DebugFormat("Reading system {0} from dats", es.Description);
+                        var emulatedSystemSetsData = await (_fromDatsGamesDataLoader.LoadGamesData(systemConfigRoot,
+                            es.CompatibleEmulator));
+                        es.Games = emulatedSystemSetsData.Games;
+                    }
+                );
         }
 
         private void PostProcessGames(EmulatedSystem emulatedSystem)
@@ -118,7 +153,7 @@ namespace CleanEmulatorFrontend.GUI
         public async Task<LoadedSystems> ForceLoadFromDats()
         {
             _cacheManager.InvalidateCache();
-            var forceLoadFromDats = await LoadLibraries();
+            var forceLoadFromDats = await LoadLibraries(true);
             return forceLoadFromDats;
         }
     }

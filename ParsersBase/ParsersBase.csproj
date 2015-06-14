@@ -59,6 +59,10 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\AppConfig\AppConfig.csproj">
+      <Project>{406150EC-C2B6-4931-89D4-96775C662493}</Project>
+      <Name>AppConfig</Name>
+    </ProjectReference>
     <ProjectReference Include="..\SystemsData\GamesData.csproj">
       <Project>{f1e8e9a7-7b34-4095-9dbc-ae0263d6b59c}</Project>
       <Name>GamesData</Name>

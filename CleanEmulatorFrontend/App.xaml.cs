@@ -1,10 +1,10 @@
 ﻿using System;
-using System.Reflection;
-using System.Threading.Tasks;
+using System.Configuration;
+using System.IO;
 using System.Windows;
-using System.Xml.Serialization;
+using AppConfig;
 using CleanEmulatorFrontend.Cache;
-using CleanEmulatorFrontend.GamesData;
+using CleanEmulatorFrontend.Cache.Thrift;
 using CleanEmulatorFrontend.SqLiteCache;
 using log4net;
 using log4net.Config;
@@ -13,6 +13,8 @@ using Lucene.Net.Analysis;
 using Lucene.Net.Index;
 using Lucene.Net.Store;
 using Ninject;
+using Ninject.Activation;
+using Directory = Lucene.Net.Store.Directory;
 
 namespace CleanEmulatorFrontend.GUI
 {
@@ -21,9 +23,10 @@ namespace CleanEmulatorFrontend.GUI
     /// </summary>
     public partial class App : Application
     {
+        public const string KeyGamesCacheEntities = "GamesCacheEntities";
+        private static readonly ILog Logger = LogManager.GetLogger(typeof (App));
         private IKernel _container;
         private MainWindow _mainWindow;
-        private static readonly ILog Logger = LogManager.GetLogger(typeof(App));
 
         protected override void OnStartup(StartupEventArgs e)
         {
@@ -46,7 +49,9 @@ namespace CleanEmulatorFrontend.GUI
                 _container.Bind<SystemConfigRootLoader>().ToSelf().InSingletonScope();
                 _container.Bind<IndexWriter.MaxFieldLength>().ToConstant(new IndexWriter.MaxFieldLength(50));
                 _container.Bind<LoadedSystems>().ToSelf().InSingletonScope();
-                _container.Bind<ICacheManager>().To<SqLiteCacheManager>().InSingletonScope();
+                _container.Bind<ICacheManager>().To<ThriftCacheManager>().InSingletonScope();
+                _container.Bind<GamesCacheEntities>().ToMethod(BuildGamesCacheEntities);
+                _container.Bind<UserConfiguration>().ToMethod(BuildUserConfiguration).InSingletonScope();
 
                 _mainWindow = _container.Get<MainWindow>();
             }
@@ -55,47 +60,26 @@ namespace CleanEmulatorFrontend.GUI
                 Logger.Error("Injection initialization failed", e);
                 throw;
             }
+        }
 
+        private UserConfiguration BuildUserConfiguration(IContext arg)
+        {
+            var configuration = new UserConfiguration();
+            configuration.Load();
+            return configuration;
+        }
+
+        private GamesCacheEntities BuildGamesCacheEntities(IContext context)
+        {
+            var connectionString = Environment.ExpandEnvironmentVariables(
+                ConfigurationManager.ConnectionStrings[KeyGamesCacheEntities].ConnectionString);
+            return new GamesCacheEntities(connectionString);
         }
 
         private void ComposeObjects()
         {
             Current.MainWindow = _mainWindow;
             _mainWindow.InitializeContent();
-        }
-    }
-
-    public class SystemConfigRootLoader
-    {
-        public async Task<SystemConfigRoot> ReadEmuConfig()
-        {
-            SystemConfigRoot systemConfigRoot = await ReadSystemConfigRoot();
-            await Task.Run(() =>
-            {
-                systemConfigRoot.InitializeDictionaries();
-                FillEmulators(systemConfigRoot);
-            });
-            return systemConfigRoot;
-        }
-
-        private async Task<SystemConfigRoot> ReadSystemConfigRoot()
-        {
-            SystemConfigRoot systemConfigRoot;
-            var assembly = Assembly.GetAssembly(typeof(SystemConfigRoot));
-            using (var stream = assembly.GetManifestResourceStream("CleanEmulatorFrontend.GamesData.emuconfig.xml"))
-            {
-                var serializer = new XmlSerializer(typeof (SystemConfigRoot));
-                systemConfigRoot = serializer.Deserialize(stream) as SystemConfigRoot;
-            }
-            return systemConfigRoot;
-        }
-
-        private void FillEmulators(SystemConfigRoot systemConfigRoot)
-        {
-            foreach (var emulator in systemConfigRoot.Emulator)
-            {
-                emulator.Launcher = new GenericLauncher(emulator);
-            }
         }
     }
 }

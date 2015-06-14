@@ -24,5 +24,6 @@ namespace CleanEmulatorFrontend.Cache
         {
             get { return !_invalidated && EmulatedSystems.Any(); }
         }
+
     }
 }

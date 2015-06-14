@@ -45,18 +45,18 @@ namespace CleanEmulatorFrontend
 
         public void InitializeContent()
         {
-            var refreshTreesFromData = ReactiveCommand.CreateAsyncTask(async _ =>  await _systemsDataLoader.LoadLibraries());
+            var _refreshTreesFromData = ReactiveCommand.CreateAsyncTask(async _ =>  await _systemsDataLoader.LoadLibraries());
             _forceRefreshTreesFromData = ReactiveCommand.CreateAsyncTask<LoadedSystems>(async _ => await _systemsDataLoader.ForceLoadFromDats());
 
 
-            refreshTreesFromData.ExecuteAsync()
+            _refreshTreesFromData.ExecuteAsync()
                 .ObserveOn(RxApp.MainThreadScheduler)
                 .Subscribe(loadedSystems =>
                 {
                     RefreshTree(loadedSystems);
                     SelectDefaultSystem();
                 });
-            refreshTreesFromData.ThrownExceptions.Subscribe(e => { Logger.Error(e); });
+            _refreshTreesFromData.ThrownExceptions.Subscribe(e => { Logger.Error(e); });
             _forceRefreshTreesFromData.ThrownExceptions.Subscribe(e => { Logger.Error(e); });
 
             WindowState = WindowState.Maximized;

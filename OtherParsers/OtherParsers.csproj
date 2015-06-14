@@ -55,7 +55,6 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Higan\Library.cs" />
     <Compile Include="Mame\Library.cs" />
     <Compile Include="Mame\MameXml.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
