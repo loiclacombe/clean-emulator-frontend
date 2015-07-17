@@ -80,7 +80,6 @@ namespace CleanEmulatorFrontend.GUI
             {
                 ReadGamesFromDats(systemConfigRoot, cachedData);
             }
-            systemConfigRoot.AllSystems.AsParallel().ForEach(PostProcessGames);
 
             stopwatch.Stop();
             Logger.DebugFormat("FillEmulatedSystems in {0} ", stopwatch.Elapsed);
@@ -106,6 +105,7 @@ namespace CleanEmulatorFrontend.GUI
                     {
                         Logger.DebugFormat("Reading system {0} from cache", es.Description);
                         es.Games = cachedData.EmulatedSystems[es.ShortName].Games;
+                        PostProcessGames(es);
                     }
                 );
         }
@@ -121,6 +121,7 @@ namespace CleanEmulatorFrontend.GUI
                         var emulatedSystemSetsData = await (_fromDatsGamesDataLoader.LoadGamesData(systemConfigRoot,
                             es.CompatibleEmulator));
                         es.Games = emulatedSystemSetsData.Games;
+                        PostProcessGames(es);
                     }
                 );
         }

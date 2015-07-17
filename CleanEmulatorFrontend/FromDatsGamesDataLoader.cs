@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using CleanEmulatorFrontend.GamesData;
+using log4net;
 using ParsersBase;
 using Seterlund.CodeGuard;
 using Library = OtherParsers.SplitSet.Library;
@@ -9,6 +10,7 @@ namespace CleanEmulatorFrontend.GUI
 {
     public class FromDatsGamesDataLoader
     {
+        private static readonly ILog Logger = LogManager.GetLogger(typeof(FromDatsGamesDataLoader));
         private readonly Dictionary<string, ILibrary> _librariesParser;
 
         public FromDatsGamesDataLoader(Library splitSetLibrary,OtherParsers.Mame.Library mameLibrary)
@@ -29,7 +31,9 @@ namespace CleanEmulatorFrontend.GUI
 
             if (library != null)
             {
-                return await library.Parse(libraryData);
+                var emulatedSystemSetsData = await library.Parse(libraryData);
+                Logger.DebugFormat("Found {0} games in {1}", emulatedSystemSetsData.Games.Count, compatibleEmulator.LibraryName);
+                return emulatedSystemSetsData;
             }
             return new EmulatedSystemSetsData();
         }
