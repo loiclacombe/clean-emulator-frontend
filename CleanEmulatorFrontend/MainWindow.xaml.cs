@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
-using System.Reactive;
 using System.Reactive.Linq;
 using System.Reflection;
 using System.Windows;
@@ -30,8 +29,8 @@ namespace CleanEmulatorFrontend
         private readonly Random _random;
         private readonly SystemsDataLoader _systemsDataLoader;
         private IEnumerable<Game> _all = new List<Game>();
-        private LoadedSystems _loadedSystems;
         private ReactiveCommand<LoadedSystems> _forceRefreshTreesFromData;
+        private LoadedSystems _loadedSystems;
 
         public MainWindow(SystemsDataLoader systemsDataLoader, Random random,
             Func<ConfigureEmulators> configureEmulators)
@@ -45,8 +44,10 @@ namespace CleanEmulatorFrontend
 
         public void InitializeContent()
         {
-            var _refreshTreesFromData = ReactiveCommand.CreateAsyncTask(async _ =>  await _systemsDataLoader.LoadLibraries());
-            _forceRefreshTreesFromData = ReactiveCommand.CreateAsyncTask<LoadedSystems>(async _ => await _systemsDataLoader.ForceLoadFromDats());
+            var _refreshTreesFromData =
+                ReactiveCommand.CreateAsyncTask(async _ => await _systemsDataLoader.LoadLibraries());
+            _forceRefreshTreesFromData =
+                ReactiveCommand.CreateAsyncTask(async _ => await _systemsDataLoader.ForceLoadFromDats());
 
 
             _refreshTreesFromData.ExecuteAsync()
@@ -97,8 +98,8 @@ namespace CleanEmulatorFrontend
                 .Subscribe(e =>
                 {
                     _forceRefreshTreesFromData.ExecuteAsync()
-                    .ObserveOn(RxApp.MainThreadScheduler)
-                    .Subscribe(RefreshTree);
+                        .ObserveOn(RxApp.MainThreadScheduler)
+                        .Subscribe(RefreshTree);
                 });
 
             ConfigureButton.Events()
@@ -114,9 +115,8 @@ namespace CleanEmulatorFrontend
         {
             var doubleClickedOnGame = GamesGrid.Events()
                 .MouseDoubleClick
-                .Select(e => e.MouseDevice.DirectlyOver)
-                .Where(e => e is FrameworkElement
-                            && ((FrameworkElement) e).Parent is DataGridCell)
+                .Select(e => e.MouseDevice.DirectlyOver as FrameworkElement)
+                .Where(e =>  e.Parent is DataGridCell)
                 .Where(OnlyOneGameIsSelected)
                 .Select(SelectedGame);
             var pressedEnterToLaunchGame = GamesGrid.Events()
@@ -129,10 +129,12 @@ namespace CleanEmulatorFrontend
                 .PreviewMouseLeftButtonDown
                 .Select(PickRandomGame);
 
-            pressedEnterToLaunchGame
+            var launchedGame = pressedEnterToLaunchGame
                 .Merge(doubleClickedOnGame)
-                .Merge(clickedRandomGameLaunch)
+                .Merge(clickedRandomGameLaunch);
+            launchedGame
                 .ObserveOn(RxApp.MainThreadScheduler)
+                .Sample(TimeSpan.FromSeconds(2))
                 .Subscribe(LaunchSelectedGame);
 
             //prevent movement to next line on press enter
@@ -253,14 +255,27 @@ namespace CleanEmulatorFrontend
 
     public static class GameLaunchExt
     {
+        private static readonly ILog Logger = LogManager.GetLogger(typeof (GameLaunchExt));
+
         public static IObservable<ExitedProcess> Start(this Game game)
         {
-            var process = game.System.Emulator.Launcher.StartGame(game);
-            return Observable.FromEventPattern(
+            var process = game.Emulator.Launcher.CreateGameProcess(game);
+
+            try
+            {
+                process.Start();
+            }
+            catch (Exception e)
+            {
+                Logger.Error(e, e);
+                ErrorDialog.DisplayException(e);
+            }
+            var ended = Observable.FromEventPattern(
                 ev => process.Exited += ev,
                 ev => process.Exited -= ev)
                 .Select(ev => ev.Sender as Process)
                 .Select(p => new ExitedProcess(p));
+            return ended;
         }
     }
 }

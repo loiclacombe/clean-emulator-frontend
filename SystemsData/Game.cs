@@ -11,6 +11,7 @@ namespace CleanEmulatorFrontend.GamesData
         public string BasePath { get; set; }
         public string LaunchPath { get; set; }
         public EmulatedSystem System { get; set; }
+        public Emulator Emulator => System.Emulator;
 
         public Game()
         {
@@ -22,14 +23,13 @@ namespace CleanEmulatorFrontend.GamesData
             get { return BasePath != null ? Path.Combine(BasePath, LaunchPath) : LaunchPath; }
         }
 
-        public int CompareTo(Game other)
-        {
-            return Description.CompareTo(other.Description);
-        }
 
         protected bool Equals(Game other)
         {
-            return Equals(System, other.System) && string.Equals(LaunchPath, other.LaunchPath) && string.Equals(BasePath, other.BasePath) && string.Equals(Description, other.Description);
+            return Equals(System, other.System) 
+                && string.Equals(LaunchPath, other.LaunchPath) 
+                && string.Equals(BasePath, other.BasePath) 
+                && string.Equals(Description, other.Description);
         }
 
         public override bool Equals(object obj)
@@ -57,7 +57,13 @@ namespace CleanEmulatorFrontend.GamesData
     {
         public int Compare(Game x, Game y)
         {
-            return x.Description.CompareTo(y.Description);
+            var result = x.Description.CompareTo(y.Description);
+            if (result == 0)
+            {
+                result = x.System.Description.CompareTo(y.System.Description);
+            }
+            return result;
         }
+
     }
 }

@@ -22,7 +22,7 @@ namespace Launchers
             _userConfiguration = userConfiguration;
         }
 
-        public Process StartGame(Game game)
+        public Process CreateGameProcess(Game game)
         {
             Logger.InfoFormat("Starting {0}", game);
 
@@ -40,7 +40,6 @@ namespace Launchers
                     WorkingDirectory = fileInfo.DirectoryName
                 }
             };
-            process.Start();
 
             return process;
         }

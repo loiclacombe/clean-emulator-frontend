@@ -4,6 +4,6 @@ namespace CleanEmulatorFrontend.GamesData
 {
     public interface ILauncher
     {
-        Process StartGame(Game game);
+        Process CreateGameProcess(Game game);
     }
 }

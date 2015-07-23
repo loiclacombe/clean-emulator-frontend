@@ -21,7 +21,7 @@ namespace CleanEmulatorFrontend.GUI
         public async Task<SystemConfigRoot> 
             ReadEmuConfig()
         {
-            var systemConfigRoot = await ReadSystemConfigRoot();
+            var systemConfigRoot = ReadSystemConfigRoot();
             systemConfigRoot.Library.ForEach(
                 l =>
                 {
@@ -54,7 +54,7 @@ namespace CleanEmulatorFrontend.GUI
             }
         }
 
-        private async Task<SystemConfigRoot> ReadSystemConfigRoot()
+        private SystemConfigRoot ReadSystemConfigRoot()
         {
             SystemConfigRoot systemConfigRoot;
             var assembly = Assembly.GetAssembly(typeof (SystemConfigRoot));
