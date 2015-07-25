@@ -61,6 +61,7 @@ namespace CleanEmulatorFrontend
             _forceRefreshTreesFromData.ThrownExceptions.Subscribe(e => { Logger.Error(e); });
 
             WindowState = WindowState.Maximized;
+            InitEvents();
         }
 
         private void RefreshTree(LoadedSystems loadedSystems)
@@ -68,7 +69,6 @@ namespace CleanEmulatorFrontend
             _loadedSystems = loadedSystems;
             SystemsTree.ItemsSource = _loadedSystems.Groups;
             GamesGrid.ItemsSource = _displayed;
-            InitEvents();
         }
 
         private void InitEvents()
@@ -173,11 +173,11 @@ namespace CleanEmulatorFrontend
 
             var selectedGamesForSystem = selectedSystemChanged
                 .OfType<EmulatedSystem>()
-                .Select(_loadedSystems.FilterBy);
+                .Select(es=> _loadedSystems.FilterBy(es));
 
             var selectedGamesForGroup = selectedSystemChanged
                 .OfType<SystemNode>()
-                .Select(_loadedSystems.FilterBy);
+                .Select(sn => _loadedSystems.FilterBy(sn));
 
             selectedGamesForGroup
                 .Merge(selectedGamesForSystem)
